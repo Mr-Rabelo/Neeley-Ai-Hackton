@@ -1,0 +1,95 @@
+{
+  "_note": "Numbers are from the U.S. Bureau of Labor Statistics Occupational Outlook Handbook (2025-35 projections; pages last modified 2026-08-27), retrieved 2026-10-17 through an automated page summary. Verify against the linked page before quoting externally. Route statements come from the TCU catalog (S1), not from BLS. Nothing here is a guarantee of a job, pay or demand.",
+  "source": {
+    "id": "S5",
+    "title": "BLS Occupational Outlook Handbook, 2025-35 employment projections",
+    "owner": "U.S. Bureau of Labor Statistics",
+    "catalogYear": "n/a",
+    "type": "external_stat",
+    "asOf": "2026-10-17",
+    "document": "Pages last modified 2026-08-27",
+    "url": "https://www.bls.gov/ooh/"
+  },
+  "projectionPeriod": "2025-35",
+  "projectionYears": 10,
+  "occupations": [
+    { "id": "accountants", "title": "Accountants and Auditors", "url": "https://www.bls.gov/ooh/business-and-financial/accountants-and-auditors.htm", "medianPay": 83680, "payYear": 2025, "jobs": 1595200, "growthPct": 5, "change": 79400, "openingsPerYear": 115300 },
+    { "id": "financial-analysts", "title": "Financial Analysts", "url": "https://www.bls.gov/ooh/business-and-financial/financial-analysts.htm", "medianPay": 103570, "payYear": 2025, "jobs": 443100, "growthPct": 7, "change": 32000, "openingsPerYear": 29500 },
+    { "id": "personal-financial-advisors", "title": "Personal Financial Advisors", "url": "https://www.bls.gov/ooh/business-and-financial/personal-financial-advisors.htm", "medianPay": 105070, "payYear": 2025, "jobs": 299400, "growthPct": 1, "change": 4100, "openingsPerYear": 17100 },
+    { "id": "financial-managers", "title": "Financial Managers", "url": "https://www.bls.gov/ooh/management/financial-managers.htm", "medianPay": 166570, "payYear": 2025, "jobs": 879700, "growthPct": 10, "change": 84900, "openingsPerYear": 65600 },
+    { "id": "computer-systems-analysts", "title": "Computer Systems Analysts", "url": "https://www.bls.gov/ooh/computer-and-information-technology/computer-systems-analysts.htm", "medianPay": 105850, "payYear": 2025, "jobs": 544400, "growthPct": 8, "change": 42900, "openingsPerYear": 32900 },
+    { "id": "information-security-analysts", "title": "Information Security Analysts", "url": "https://www.bls.gov/ooh/computer-and-information-technology/information-security-analysts.htm", "medianPay": 129180, "payYear": 2025, "jobs": 192900, "growthPct": 21, "change": 40600, "openingsPerYear": 14100 },
+    { "id": "management-analysts", "title": "Management Analysts", "url": "https://www.bls.gov/ooh/business-and-financial/management-analysts.htm", "medianPay": 101860, "payYear": 2025, "jobs": 1077100, "growthPct": 10, "change": 109200, "openingsPerYear": 94100 },
+    { "id": "market-research-analysts", "title": "Market Research Analysts and Marketing Specialists", "url": "https://www.bls.gov/ooh/business-and-financial/market-research-analysts.htm", "medianPay": 78760, "payYear": 2025, "jobs": 952700, "growthPct": 7, "change": 66300, "openingsPerYear": 82000 },
+    { "id": "marketing-managers", "title": "Advertising, Promotions, and Marketing Managers", "url": "https://www.bls.gov/ooh/management/advertising-promotions-and-marketing-managers.htm", "medianPay": 165780, "payYear": 2025, "jobs": 454800, "growthPct": 6, "change": 27900, "openingsPerYear": 36300 },
+    { "id": "logisticians", "title": "Logisticians", "url": "https://www.bls.gov/ooh/business-and-financial/logisticians.htm", "medianPay": 82320, "payYear": 2025, "jobs": 255100, "growthPct": 18, "change": 44900, "openingsPerYear": 26600 },
+    { "id": "purchasing", "title": "Purchasing Managers, Buyers, and Purchasing Agents", "url": "https://www.bls.gov/ooh/business-and-financial/purchasing-managers-buyers-and-purchasing-agents.htm", "medianPay": 81670, "payYear": 2025, "jobs": 604400, "growthPct": 6, "change": 34400, "openingsPerYear": 53600 },
+    { "id": "hr-specialists", "title": "Human Resources Specialists", "url": "https://www.bls.gov/ooh/business-and-financial/human-resources-specialists.htm", "medianPay": 75940, "payYear": 2025, "jobs": 939700, "growthPct": 6, "change": 60100, "openingsPerYear": 73700 }
+  ],
+  "majors": {
+    "accounting": {
+      "occupations": ["accountants", "financial-analysts"],
+      "routes": ["Public accounting firms, industry or government service", "Eligibility to sit for the Uniform CPA Examination in Texas (per the catalog)"],
+      "routesSource": { "sourceId": "S1", "page": 588 },
+      "skills": ["Financial reporting", "Taxation", "Audit and assurance", "Accounting information systems"],
+      "skillCourses": ["ACCT30153", "ACCT30303", "ACCT30273", "ACCT40223"],
+      "caveat": "Licensing (CPA) rules beyond the catalog statement were not checked."
+    },
+    "bis": {
+      "occupations": ["computer-systems-analysts", "information-security-analysts", "management-analysts"],
+      "routes": ["Consulting practices, technology firms and technology departments (per the catalog)", "Leading digital-transformation projects"],
+      "routesSource": { "sourceId": "S1", "page": 594 },
+      "skills": ["Business process analysis", "Data management", "Cybersecurity", "Business intelligence and analytics", "Digital transformation with AI"],
+      "skillCourses": ["INSC30723", "INSC30823", "INSC30853", "INSC40843", "INSC40383"],
+      "caveat": "BLS lists computer systems analysts and information security analysts; BIS graduates may also enter roles BLS groups elsewhere."
+    },
+    "entrepreneurship": {
+      "occupations": ["management-analysts", "financial-analysts"],
+      "routes": ["Business owner, manager of a family or entrepreneurial company", "Member of an innovation team", "Analyst for a venture capital or private equity firm", "Management consultant, economic development officer, director of a not-for-profit (all per the catalog)"],
+      "routesSource": { "sourceId": "S1", "page": 595 },
+      "skills": ["Opportunity recognition", "New venture development", "Raising capital", "Innovation and creativity"],
+      "skillCourses": ["ENTR30533", "ENTR40143", "ENTR40243", "ENTR30543"],
+      "caveat": "BLS occupation data does not measure business ownership or startup outcomes, so the figures shown cover only the salaried roles named in the catalog."
+    },
+    "finance": {
+      "occupations": ["financial-analysts", "personal-financial-advisors", "financial-managers"],
+      "routes": ["Corporate financial management", "Commercial banking", "Investment brokerage and portfolio management", "Investment banking and insurance (all per the catalog)"],
+      "routesSource": { "sourceId": "S1", "page": 596 },
+      "skills": ["Investments", "Financial institutions and markets", "Derivatives", "Financial modeling"],
+      "skillCourses": ["FINA30213", "FINA30203", "FINA30233", "FINA30223"],
+      "caveat": "Personal financial advisor growth is projected at only 1% for 2025-35."
+    },
+    "finance-re": {
+      "occupations": ["financial-analysts", "financial-managers"],
+      "routes": ["Banking, mortgage lending, real estate development, asset management, appraisal, real estate management and brokerage (per the catalog)"],
+      "routesSource": { "sourceId": "S1", "page": 597 },
+      "skills": ["Real estate valuation", "Real estate finance and investment analysis", "Real estate law"],
+      "skillCourses": ["FINA30623", "FINA40613", "FINA40603"],
+      "caveat": "Real-estate-specific occupations (appraisers, brokers, property managers) were not retrieved, so only finance roles are shown."
+    },
+    "management": {
+      "occupations": ["management-analysts", "hr-specialists"],
+      "routes": ["Roles across virtually all organizations that need management and leadership skills (per the catalog)", "Consulting or human resources paths (the catalog says course recommendations are available on request)"],
+      "routesSource": { "sourceId": "S1", "page": 599 },
+      "skills": ["Organizational analysis and problem solving", "Managing people and HR", "High-performance teams", "Negotiation", "Strategic management"],
+      "skillCourses": ["MANA30323", "MANA40203", "MANA40213", "MANA40633", "MANA40153"],
+      "caveat": "Management is a broad major; BLS occupations shown are examples, not the only routes."
+    },
+    "marketing": {
+      "occupations": ["market-research-analysts", "marketing-managers"],
+      "routes": ["Roles in marketing research, strategy and brand/product management, built from the major's required and elective courses"],
+      "routesSource": { "sourceId": "S1", "page": 600 },
+      "skills": ["Marketing research", "Customer insights", "Marketing strategy", "Digital marketing", "Marketing AI and automation"],
+      "skillCourses": ["MARK30113", "MARK30243", "MARK40203", "MARK40103", "MARK40143"],
+      "caveat": "The supplied catalog page gives no explicit career list for marketing."
+    },
+    "scm": {
+      "occupations": ["logisticians", "purchasing"],
+      "routes": ["Supply chain positions in companies that must respond to changing customer requirements (per the catalog)"],
+      "routesSource": { "sourceId": "S1", "page": 601 },
+      "skills": ["Logistics and transportation", "Procurement and supply management", "Supply chain strategy", "Predictive analytics and demand planning"],
+      "skillCourses": ["INSC40313", "INSC40323", "INSC40343", "INSC40303"],
+      "caveat": "Logistician growth of 18% is one of the stronger figures in this set; it is a projection, not a guarantee."
+    }
+  }
+}

@@ -1,0 +1,102 @@
+Name: Student,Sample
+Student ID: 000000000
+Print Date: 2026-10-17
+Current Career/Program/Plan Info
+Career Program Prog Req Term Plan Description Plan Req Term
+UGRD BU-UG 2025 Fall Term Business Info Systems BBA 2025 Fall Term
+UGRD BU-UG 2025 Fall Term Finance 2025 Fall Term
+UGRD BU-UG 2025 Fall Term Honors College 2025 Fall Term
+
+- - - Beginning of Undergraduate Record - - -
+
+2025 Fall Term
+Course Description Attempted Earned Grade Points
+Program: AddRan - Undergraduate
+Plan: Economics - International BS
+
+CRJU 20413 Intro/Criminal Justice 3.00 3.00 A 12.000
+Course Attribute: Citizenship & Social Values
+Course Attribute: Social Science-TCU CC
+ECON 10223 Intro Microeconomics 3.00 3.00 A 12.000
+Course Attribute: Energy Technology Management
+Course Attribute: Social Science-TCU CC
+ECON 10233 Intro Macroeconomics 3.00 3.00 B+ 9.990
+Course Attribute: Energy Technology Management
+Course Attribute: Social Science-TCU CC
+ENGL 10803 Intro Comp:Writing as Inquiry 3.00 3.00 A 12.000
+Course Attribute: Written Communication
+MATH 10283 Applied Calculus 3.00 3.00 A 12.000
+Course Attribute: Mathematical Reasoning
+Transfer Credit from University of Missouri-St Louis
+Applied Toward AddRan - Undergraduate Program
+COMM 10123 Communicating Effectively 3.00 3.00 T
+ENGL 20000 Gen Transfer Credit-HUM, LT 3.00 3.00 T
+MATH 10054 Precalculus with Trigonometry 5.00 5.00 T
+PSYC 10213 Introduction to Psychology 3.00 3.00 T
+Course Transfer GPA: 0.000 Transfer Totals: 14.00 14.00 0.000
+Term GPA: 3.866 Term Totals: 15.00 15.00 57.990
+Cum GPA: 3.866 Cum Totals: 15.00 29.00 57.990
+Term Honor: Dean's List
+
+2026 Spring Term
+Course Description Attempted Earned Grade Points
+Program: AddRan - Undergraduate
+Plan: Economics - International BS
+
+BIOL 10003 Contemporary Issues in Biology 3.00 3.00 B 9.000
+Course Attribute: Global Awareness
+Course Attribute: Natural Science
+DANC 10453 Dance in World Cultures 3.00 3.00 A 12.000
+Course Attribute: Cultural Awareness
+Course Attribute: Comparative Race and Ethnic Studies
+Course Attribute: Fine Arts-TCU CC
+ENGL 20803 Intermed Comp:Writing Argument 3.00 3.00 A 12.000
+Course Topic: Ethical Issues in Society
+Course Attribute: Written Communication
+Course Attribute: Web Folder Classes
+PHYS 10263 Intro Astro: Cosmic Origins 3.00 3.00 P 6.000
+Course Attribute: Historical Traditions
+Course Attribute: Natural Science
+RELI 10033 Understanding Rel:Texts&Ideas 3.00 3.00 P 6.000
+Course Topic: The Reli of Ancient Israel
+Course Attribute: Humanities
+Course Attribute: Religious Traditions
+Term GPA: 3.666 Term Totals: 9.00 15.00 33.000
+Cum GPA: 3.791 Cum Totals: 24.00 44.00 90.990
+
+2026 Summer Term
+Course Description Attempted Earned Grade Points
+Program: Business - Undergraduate
+Plan: Business
+
+Term GPA: 0.000 Term Totals: 0.00 0.00 0.000
+Cum GPA: 3.791 Cum Totals: 24.00 44.00 90.990
+
+Name: Student,Sample
+Student ID: 000000000
+2026 Fall Term
+Course Description Attempted Earned Grade Points
+Program: Business - Undergraduate
+Plan: Business Info Systems BBA
+Plan: Finance
+Plan: Honors College
+
+ACCT 20353 Fundamentals of Accounting 3.00 0.00 0.000
+Course Topic: Honors-Neeley Fellows
+Course Attribute: Honors Class
+HNRS 20213 Lang,Comm & Cultrl Identity 3.00 0.00 0.000
+Course Topic: Persuasion
+Course Attribute: Cultural Awareness
+Course Attribute: Honors:Cultural Visions
+Course Attribute: Honors Class
+Course Attribute: Humanities
+INSC 20153 Statistical Analysis 3.00 0.00 0.000
+Course Attribute: Digital Culture and Data Analytics
+MARK 30153 Marketing Management 3.00 0.00 0.000
+Course Topic: Honors - Neeley Fellows
+Course Attribute: Honors Class
+Course Attribute: Neeley Fellows
+Term GPA: 0.000 Term Totals: 12.00 0.00 0.000
+Cum GPA: 3.791 Cum Totals: 24.00 44.00 90.990
+- - - End of Undergraduate Record - - -
+- - - End of Transcript - - -
