@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { useStudent } from "@/components/StudentContext";
 import { Icon } from "@/components/ui";
+import { hasCorrections } from "@/lib/corrections";
 
 const TABS = [
   { href: "/student", label: "Overview" },
@@ -12,12 +13,14 @@ const TABS = [
   { href: "/student/courses", label: "Courses" },
   { href: "/student/whatif", label: "What if" },
   { href: "/student/careers", label: "Careers" },
+  { href: "/student/goals", label: "My goals" },
+  { href: "/student/corrections", label: "Corrections" },
   { href: "/student/chat", label: "Ask the AI" },
 ];
 
 export default function StudentLayout({ children }: { children: ReactNode }) {
   const path = usePathname();
-  const { record, ready } = useStudent();
+  const { record, ready, corrections } = useStudent();
   const locked = ready && !record;
   return (
     <div className="wrap stack-lg">
@@ -32,6 +35,9 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
         })}
       </nav>
       {locked && <p className="small" role="status">Load a transcript to unlock these sections.</p>}
+      {record && hasCorrections(corrections) && path !== "/student/corrections" && (
+        <div className="banner" role="status"><span aria-hidden>✎</span><div><strong>Using your corrections.</strong> This page reflects changes you made, not the record we read. <Link href="/student/corrections">Review or reset</Link></div></div>
+      )}
       {children}
     </div>
   );

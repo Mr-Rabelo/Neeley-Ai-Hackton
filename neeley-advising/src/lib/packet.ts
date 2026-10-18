@@ -10,6 +10,9 @@ export interface AdvisorPacket {
   unverified: string[];
   sources: string[];
   reason: string;
+  /** Student-supplied overlays, shown to the advisor next to the original record. */
+  context?: { goals?: Record<string, unknown>; corrections?: Record<string, unknown>; correctionNotes?: string[] };
+  challenge?: { findingId: string; finding: string; note: string };
 }
 
 export function buildPacket(record: StudentRecord, plan: PlanResult, reason: string): AdvisorPacket {

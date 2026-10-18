@@ -4,7 +4,7 @@ import { careerCourses, careerTagList, buildPlan, defaultTarget } from "./plan";
 import { plansToMajorIds } from "../transcript";
 import { labelOf } from "../terms";
 
-export type AlternativeKind = "baseline" | "add_minor" | "change_major" | "career_focus" | "summer";
+export type AlternativeKind = "baseline" | "add_minor" | "change_major" | "career_focus" | "summer" | "goals";
 
 export interface Alternative {
   kind: AlternativeKind;
@@ -196,6 +196,40 @@ export function summerAlternative(record: StudentRecord, baseline: Alternative, 
     stays: ["Same majors and requirements."],
     unverified: ["Summer offerings are only as reliable as the catalog's typical pattern."],
     advisorDecisions: [],
+  };
+}
+
+/** A separate plan built from the student's stated goals. The default plan is never changed. */
+export function goalsAlternative(record: StudentRecord, baseline: Alternative, over: Partial<PlanOptions> = {}): Alternative {
+  const prefs = [...(over.electivePrefs ?? []), ...(over.careerTags ?? []).flatMap(careerCourses)];
+  const opts = baseOptions(record, { ...over, electivePrefs: prefs.length ? prefs : undefined });
+  const plan = buildPlan(record, opts, "Your goals plan");
+  const base = codesOf(baseline.plan);
+  const mine = codesOf(plan);
+  const added = [...mine].filter((c) => !base.has(c));
+  const dropped = [...base].filter((c) => !mine.has(c));
+  const delta = termDelta(baseline.plan, plan);
+  const avoidHit = (over.avoid ?? []).filter((c) => mine.has(c));
+  return {
+    kind: "goals",
+    title: "Your goals plan",
+    plan,
+    gains: [
+      delta < 0 ? `Could finish about ${-delta} term${delta < -1 ? "s" : ""} sooner (${plan.earliestGraduation.label}).` : "Your stated preferences are applied where the rules allow.",
+      added.length ? `Adds ${added.map(prettyCode).join(", ")}.` : "No new courses are added.",
+    ],
+    costs: [
+      dropped.length ? `Replaces ${dropped.map(prettyCode).join(", ")}.` : "No courses are dropped.",
+      delta > 0 ? `Expected finish moves about ${delta} term${delta > 1 ? "s" : ""} later (${plan.earliestGraduation.label}).` : "The expected finish does not get later.",
+    ],
+    stays: ["All required courses", `Expected finish: ${plan.earliestGraduation.label ?? "n/a"}`],
+    unverified: [
+      ...plan.unverified,
+      "Preferred class times need a published schedule; they only affect the sample schedule view.",
+      "Grad school, internship and study abroad are noted for the advisor; they do not change course placement.",
+      ...(avoidHit.length ? [`${avoidHit.map(prettyCode).join(", ")} could not be avoided because the plan requires ${avoidHit.length > 1 ? "them" : "it"}.`] : []),
+    ],
+    advisorDecisions: [...plan.advisorQuestions, "Ask an advisor whether these goals are realistic with your major requirements."],
   };
 }
 

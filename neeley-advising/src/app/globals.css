@@ -376,3 +376,5 @@ table.report td:first-child { min-width: 260px; }
   .banner, .callout, .stat { break-inside: avoid; }
   tr { break-inside: avoid; }
 }
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}

@@ -5,12 +5,13 @@ import { useSearchParams } from "next/navigation";
 import { useStudent } from "@/components/StudentContext";
 import { Card } from "@/components/Bits";
 import { ApiError, postJson } from "@/lib/client";
+import { describeCorrections, hasCorrections, hasGoals } from "@/lib/corrections";
 
 const SCHED = process.env.NEXT_PUBLIC_ADVISOR_SCHEDULING_URL;
 
 function Inner() {
   const sp = useSearchParams();
-  const { record } = useStudent();
+  const { record, originalRecord, corrections, goals } = useStudent();
   const [open, setOpen] = useState<"apply" | "advisor" | "check" | null>(sp.get("review") ? "advisor" : null);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -24,7 +25,7 @@ function Inner() {
         const r = await postJson<{ message: string; saved: boolean }>("/api/apply-mock", { name: f.name, email: f.email, term: f.term, program: f.program || "Undecided", note: f.note, consent: f.consent });
         setMsg(`${r.message} ${r.saved ? "Your answers were saved because you agreed." : "Nothing was saved."}`);
       } else {
-        const r = await postJson<{ message: string }>("/api/advisor-request", { type: f.type, name: f.name, email: f.email || undefined, phone: f.phone || undefined, preferredTime: f.time, topic: f.topic, consent: f.consent, record: f.type === "review" ? record : undefined });
+        const r = await postJson<{ message: string }>("/api/advisor-request", { type: f.type, name: f.name, email: f.email || undefined, phone: f.phone || undefined, preferredTime: f.time, topic: f.topic, consent: f.consent, record: f.type === "review" ? (originalRecord ?? record) : undefined, context: f.type === "review" && originalRecord && (hasCorrections(corrections) || hasGoals(goals)) ? { goals: hasGoals(goals) ? { ...goals } : undefined, corrections: hasCorrections(corrections) ? { ...corrections } : undefined, correctionNotes: hasCorrections(corrections) ? describeCorrections(originalRecord, corrections) : undefined } : undefined });
         setMsg(r.message);
       }
     } catch (e) { setErr(e instanceof ApiError ? e.message : "Something went wrong."); } finally { setBusy(false); }

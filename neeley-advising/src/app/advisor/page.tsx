@@ -32,7 +32,8 @@ export default function Advisor() {
           <div className="row-between"><h3>{r.type === "review" ? "Plan review" : r.type === "meeting" ? "Meeting request" : "Call back"} <span className="badge b-neutral">{r.status}</span></h3><span className="small">{new Date(r.created_at).toLocaleString()} · via {r.channel}</span></div>
           {r.contact && <p className="small">{[r.contact.name, r.contact.email, r.contact.phone].filter(Boolean).join(" · ") || "No contact details"}{r.preferred_time ? ` · prefers ${r.preferred_time}` : ""}</p>}
           {r.topic && <p style={{ marginTop: 8 }}>{r.topic}</p>}
-          {r.packet && (
+          {r.packet?.challenge && <div className="callout" style={{ marginTop: 10 }}><b>Student challenges a finding</b><p>{r.packet.challenge.finding}</p><p className="small">Their note: {r.packet.challenge.note}</p></div>}
+          {r.packet && r.packet.plan && (
             <details style={{ marginTop: 10 }} open>
               <summary>Review packet: {r.packet.plan.label} (earliest finish {r.packet.plan.earliestGraduation ?? "n/a"}, completeness {Math.round(r.packet.plan.completeness * 100)}%)</summary>
               <div className="stack" style={{ marginTop: 10 }}>
@@ -41,6 +42,8 @@ export default function Advisor() {
                 <div><b>Blockers</b><ul>{r.packet.findings.blockers.map((q) => <li key={q}>{q}</li>)}{!r.packet.findings.blockers.length && <li>None</li>}</ul></div>
                 <div><b>Warnings</b><ul>{r.packet.findings.warnings.map((q) => <li key={q}>{q}</li>)}</ul></div>
                 <div><b>Unverified</b><ul>{r.packet.unverified.map((q) => <li key={q}>{q}</li>)}</ul></div>
+                {r.packet.context?.correctionNotes?.length ? <div><b>Corrected by the student (original record kept)</b><ul>{r.packet.context.correctionNotes.map((q) => <li key={q}>{q}</li>)}</ul></div> : null}
+                {r.packet.context?.goals ? <div><b>Student goals</b><pre className="small" style={{ whiteSpace: "pre-wrap" }}>{JSON.stringify(r.packet.context.goals, null, 1)}</pre></div> : null}
                 <p className="small">Sources: {r.packet.sources.join(" · ")}</p>
               </div>
             </details>

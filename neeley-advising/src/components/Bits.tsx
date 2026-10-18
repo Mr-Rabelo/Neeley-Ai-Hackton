@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Availability, Finding, SourceRecord } from "@/lib/types";
 import { CONF_LABEL } from "@/lib/client";
+import { ChallengeButton } from "@/components/ChallengeButton";
 
 export function ConfBadge({ c }: { c: string }) {
   const l = CONF_LABEL[c] ?? CONF_LABEL.assumption;
@@ -31,6 +32,7 @@ export function FindingCard({ f }: { f: Finding }) {
         <p><b>{s.label}.</b> {f.message} {f.sourceIds.map((id) => <Src key={id} id={id} />)}</p>
         {f.fix && <p className="fix">{f.fix}</p>}
         <p className="small"><ConfBadge c={f.confidence} />{f.needsAdvisor && <span className="badge b-bad" style={{ marginLeft: 6 }}>Needs an advisor</span>}</p>
+        <ChallengeButton id={f.id} message={f.message} />
       </div>
     </div>
   );

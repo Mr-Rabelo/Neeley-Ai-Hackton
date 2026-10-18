@@ -1,13 +1,23 @@
 import { z } from "zod";
 import { bad, json, parseRecord, readJson } from "@/lib/api";
-import { addMinorAlternative, allMajorSwitches, allMinorOptions, baselineAlternative, careerAlternative, changeMajorAlternative, compare, summerAlternative } from "@/lib/engine/alternatives";
+import { addMinorAlternative, allMajorSwitches, allMinorOptions, baselineAlternative, careerAlternative, changeMajorAlternative, compare, goalsAlternative, summerAlternative } from "@/lib/engine/alternatives";
 import { getProgram } from "@/lib/catalog";
 
 export const maxDuration = 60;
 
 const schema = z.object({
   record: z.unknown(),
-  kind: z.enum(["add_minor", "change_major", "career_focus", "summer", "overview", "compare"]),
+  kind: z.enum(["add_minor", "change_major", "career_focus", "summer", "overview", "compare", "goals"]),
+  goals: z
+    .object({
+      targetTermId: z.string().max(20).optional(),
+      maxCreditsPerTerm: z.number().int().min(6).max(21).optional(),
+      allowSummer: z.boolean().optional(),
+      careerTags: z.array(z.string().max(60)).max(5).optional(),
+      electivePrefs: z.array(z.string().max(12)).max(10).optional(),
+      avoid: z.array(z.string().max(12)).max(10).optional(),
+    })
+    .optional(),
   picks: z
     .array(z.object({ kind: z.enum(["add_minor", "change_major", "career_focus", "summer"]), minorId: z.string().optional(), toMajorId: z.string().optional(), careerTags: z.array(z.string()).max(3).optional() }))
     .max(3)
@@ -46,6 +56,10 @@ export async function POST(req: Request) {
       });
     }
     let alt;
+    if (d.kind === "goals") {
+      alt = goalsAlternative(record, base, d.goals ?? {});
+      return json({ baseline: base, alternative: alt, comparison: compare(base, [alt]) });
+    }
     if (d.kind === "add_minor") {
       if (!d.minorId || !getProgram(d.minorId)) return bad("Unknown minor.");
       alt = addMinorAlternative(record, base, d.minorId);

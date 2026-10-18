@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import type { StudentRecord } from "@/lib/types";
 import type { StudentProfile } from "@/lib/ai/profile";
 import { postJson } from "@/lib/client";
+import { applyCorrections, EMPTY_CORRECTIONS, EMPTY_GOALS, type Corrections, type Goals } from "@/lib/corrections";
 
 export interface Extraction {
   method: string;
@@ -12,7 +13,13 @@ export interface Extraction {
 }
 
 interface Ctx {
+  /** Effective record: what we read plus the student's corrections. */
   record: StudentRecord | null;
+  originalRecord: StudentRecord | null;
+  corrections: Corrections;
+  goals: Goals;
+  setCorrections: (c: Corrections) => void;
+  setGoals: (g: Goals) => void;
   profile: StudentProfile | null;
   extraction: Extraction | null;
   loading: boolean;
@@ -27,6 +34,7 @@ interface Ctx {
 }
 
 const KEY = "neeley.student.v1";
+const EXTRA_KEY = "neeley.extras.v1";
 const StudentCtx = createContext<Ctx | null>(null);
 
 export function StudentProvider({ children }: { children: ReactNode }) {
@@ -37,6 +45,8 @@ export function StudentProvider({ children }: { children: ReactNode }) {
   const [profiling, setProfiling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [corrections, setCorrectionsState] = useState<Corrections>(EMPTY_CORRECTIONS);
+  const [goals, setGoalsState] = useState<Goals>(EMPTY_GOALS);
 
   useEffect(() => {
     try {
@@ -46,6 +56,12 @@ export function StudentProvider({ children }: { children: ReactNode }) {
         setRecord(v.record ?? null);
         setProfile(v.profile ?? null);
         setExtraction(v.extraction ?? null);
+      }
+      const ex = localStorage.getItem(EXTRA_KEY);
+      if (ex) {
+        const v = JSON.parse(ex);
+        if (v.corrections) setCorrectionsState({ ...EMPTY_CORRECTIONS, ...v.corrections });
+        if (v.goals) setGoalsState({ ...EMPTY_GOALS, ...v.goals });
       }
     } catch {
       /* storage can be blocked; the app works without it */
@@ -62,6 +78,16 @@ export function StudentProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const saveExtras = useCallback((c: Corrections, g: Goals) => {
+    try {
+      localStorage.setItem(EXTRA_KEY, JSON.stringify({ corrections: c, goals: g }));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const effective = useMemo(() => (record ? applyCorrections(record, corrections) : null), [record, corrections]);
+
   const buildProfile = useCallback(async (r: StudentRecord, e: Extraction | null) => {
     setProfiling(true);
     try {
@@ -76,12 +102,15 @@ export function StudentProvider({ children }: { children: ReactNode }) {
   }, [persist]);
 
   const accept = useCallback(async (res: { record: StudentRecord; extraction: Extraction }) => {
+    setCorrectionsState(EMPTY_CORRECTIONS);
+    setGoalsState(EMPTY_GOALS);
+    saveExtras(EMPTY_CORRECTIONS, EMPTY_GOALS);
     setRecord(res.record);
     setExtraction(res.extraction);
     setProfile(null);
     persist(res.record, null, res.extraction);
     void buildProfile(res.record, res.extraction);
-  }, [buildProfile, persist]);
+  }, [buildProfile, persist, saveExtras]);
 
   const wrap = useCallback(async (fn: () => Promise<{ record: StudentRecord; extraction: Extraction }>) => {
     setLoading(true);
@@ -96,7 +125,10 @@ export function StudentProvider({ children }: { children: ReactNode }) {
   }, [accept]);
 
   const value = useMemo<Ctx>(() => ({
-    record, profile, extraction, loading, profiling, error, ready,
+    record: effective, originalRecord: record, corrections, goals,
+    setCorrections: (c) => { setCorrectionsState(c); saveExtras(c, goals); },
+    setGoals: (g) => { setGoalsState(g); saveExtras(corrections, g); },
+    profile, extraction, loading, profiling, error, ready,
     loadSample: () => wrap(() => postJson("/api/transcript", { sample: true })),
     loadText: (text) => wrap(() => postJson("/api/transcript", { text })),
     loadFile: (file) => wrap(async () => {
@@ -108,8 +140,8 @@ export function StudentProvider({ children }: { children: ReactNode }) {
       return data;
     }),
     refreshProfile: async () => { if (record) await buildProfile(record, extraction); },
-    clear: () => { setRecord(null); setProfile(null); setExtraction(null); setError(null); persist(null, null, null); },
-  }), [record, profile, extraction, loading, profiling, error, ready, wrap, buildProfile, persist]);
+    clear: () => { setCorrectionsState(EMPTY_CORRECTIONS); setGoalsState(EMPTY_GOALS); saveExtras(EMPTY_CORRECTIONS, EMPTY_GOALS); setRecord(null); setProfile(null); setExtraction(null); setError(null); persist(null, null, null); },
+  }), [record, effective, corrections, goals, profile, extraction, loading, profiling, error, ready, wrap, buildProfile, persist, saveExtras]);
 
   return <StudentCtx.Provider value={value}>{children}</StudentCtx.Provider>;
 }

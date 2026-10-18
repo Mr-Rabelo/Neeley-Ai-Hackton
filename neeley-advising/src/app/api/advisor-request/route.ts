@@ -13,6 +13,9 @@ const schema = z.object({
   topic: z.string().max(500).optional(),
   consent: z.boolean(),
   record: z.unknown().optional(),
+  context: z
+    .object({ goals: z.record(z.string(), z.unknown()).optional(), corrections: z.record(z.string(), z.unknown()).optional(), correctionNotes: z.array(z.string().max(300)).max(20).optional() })
+    .optional(),
 });
 
 export async function POST(req: Request) {
@@ -26,6 +29,7 @@ export async function POST(req: Request) {
     const record = parseRecord(d.record);
     if (!record) return json({ error: "A review request needs a loaded transcript." }, 400);
     packet = buildPacket(record, baselineAlternative(record).plan, d.topic ?? "Student requested advisor review");
+    if (d.context && JSON.stringify(d.context).length < 6000) packet = { ...packet, context: d.context };
   }
   const saved = await saveRow("advisor_requests", {
     type: d.type, status: d.type === "review" ? "review_requested" : "requested", contact: { name: d.name ?? null, email: d.email ?? null, phone: d.phone ?? null },

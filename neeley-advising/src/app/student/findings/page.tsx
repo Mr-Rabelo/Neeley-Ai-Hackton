@@ -7,6 +7,7 @@ import { useStudent } from "@/components/StudentContext";
 import { Card, NeedStudent } from "@/components/Bits";
 import { Icon, Stat } from "@/components/ui";
 import { postJson } from "@/lib/client";
+import { ChallengeButton } from "@/components/ChallengeButton";
 
 const SEV_LABEL = { blocker: "Blocker", warning: "Warning", info: "Note" } as const;
 const SEV_CLS = { blocker: "b-bad", warning: "b-warn", info: "b-info" } as const;
@@ -73,7 +74,7 @@ export default function FindingsPage() {
               <tbody>
                 {shown.map((r) => (
                   <tr key={r.id}>
-                    <td><span className={`badge ${SEV_CLS[r.severity]}`}>{SEV_LABEL[r.severity]}</span>{r.needsAdvisor && <span className="badge b-bad" style={{ marginLeft: 6 }}>Advisor</span>}<p style={{ marginTop: 6 }}>{r.finding}</p>{r.fix && <p className="small" style={{ marginTop: 4 }}>Fix: {r.fix}</p>}</td>
+                    <td><span className={`badge ${SEV_CLS[r.severity]}`}>{SEV_LABEL[r.severity]}</span>{r.needsAdvisor && <span className="badge b-bad" style={{ marginLeft: 6 }}>Advisor</span>}<p style={{ marginTop: 6 }}>{r.finding}</p>{r.fix && <p className="small" style={{ marginTop: 4 }}>Fix: {r.fix}</p>}<div className="no-print" style={{ marginTop: 8 }}><ChallengeButton id={r.id} message={r.finding} /></div></td>
                     <td><ul className="plain">{r.evidence.map((e) => <li key={e}>{e}</li>)}</ul></td>
                     <td><p>{r.impact}</p>{r.assumptions.length > 0 && <details><summary>Assumptions ({r.assumptions.length})</summary><ul className="plain small">{r.assumptions.map((a) => <li key={a}>{a}</li>)}</ul></details>}</td>
                     <td>{r.affected}</td>

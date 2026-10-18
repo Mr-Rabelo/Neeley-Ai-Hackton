@@ -6,6 +6,7 @@ import type { TermSchedule } from "@/lib/sections";
 import { DAYS, DAY_NAME, fmtDays, fmtTime } from "@/lib/sections";
 import { postJson } from "@/lib/client";
 import { Icon } from "./ui";
+import { useStudent } from "./StudentContext";
 
 interface Check { label: string; assumptions: string[]; terms: TermSchedule[]; totalConflicts: number; termsWithConflicts: number; waitlistedCourses: number }
 const pretty = (c: string) => c.replace(/^([A-Z]+)(\d+)$/, "$1 $2");
@@ -42,7 +43,9 @@ export function SchedulePanel({ plan }: { plan: PlanResult }) {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<Check | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const { goals } = useStudent();
   const [pref, setPref] = useState<"none" | "morning" | "afternoon">("none");
+  useEffect(() => { if (goals.classTimes && goals.classTimes !== "none") setPref(goals.classTimes); }, [goals.classTimes]);
   const [ti, setTi] = useState(0);
 
   useEffect(() => {
