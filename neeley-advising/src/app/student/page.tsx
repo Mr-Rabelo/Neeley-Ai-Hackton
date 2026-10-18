@@ -2,26 +2,27 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { useStudent } from "@/components/StudentContext";
-import { Card, ConfBadge, Src } from "@/components/Bits";
+import { Card, Src } from "@/components/Bits";
+import { Icon, Step } from "@/components/ui";
 import type { Recommendations } from "@/lib/ai/recommend";
-import type { Claim } from "@/lib/ai/profile";
+import type { StudentProfile as Profile } from "@/lib/ai/profile";
 import { ApiError, postJson } from "@/lib/client";
 
-function ClaimList({ title, items }: { title: string; items: Claim[] }) {
-  if (!items.length) return null;
-  return (
-    <div className="stack" style={{ gap: 8 }}>
-      <h4>{title}</h4>
-      <ul className="stack" style={{ gap: 10, paddingLeft: 0, margin: 0, listStyle: "none" }}>
-        {items.map((c) => (
-          <li key={c.claim}>
-            {c.claim} <span className={`badge ${c.confidence === "high" ? "b-ok" : c.confidence === "medium" ? "b-info" : "b-warn"}`}>{c.confidence} confidence</span>
-            <div className="small">Based on: {c.evidence.join(", ")}</div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+const TYPE_LABEL: Record<string, { text: string; icon: string }> = {
+  strength: { text: "Strength", icon: "star" },
+  interest: { text: "Interest", icon: "bulb" },
+  risk: { text: "Watch-out", icon: "eye" },
+  gap: { text: "Gap to close", icon: "target" },
+};
+
+function claimsByConfidence(p: Profile) {
+  const all = [
+    ...p.strengths.map((c) => ({ ...c, kind: "strength" })),
+    ...p.interests.map((c) => ({ ...c, kind: "interest" })),
+    ...p.risks.map((c) => ({ ...c, kind: "risk" })),
+    ...p.gaps.map((c) => ({ ...c, kind: "gap" })),
+  ];
+  return (["high", "medium", "low"] as const).map((level) => ({ level, items: all.filter((c) => c.confidence === level) }));
 }
 
 export default function StudentHome() {
@@ -85,10 +86,10 @@ export default function StudentHome() {
       </div>
 
       {ex && (
-        <Card title="1. What we read from the transcript">
-          <p>{ex.notes.join(" ")} {ex.method === "ai+deterministic" ? <span className="badge b-info">AI + rule-based check</span> : <span className="badge b-neutral">Rule-based only</span>}</p>
-          {ex.discrepancies.length > 0 && <ul className="small" style={{ marginTop: 8 }}>{ex.discrepancies.map((d) => <li key={d}>{d}</li>)}</ul>}
-          <details style={{ marginTop: 10 }}>
+        <Step n={1} title="What we read from the transcript" chip={ex.method === "ai+deterministic" ? <span className="badge b-info">AI + rule-based check</span> : <span className="badge b-neutral">Rule-based only</span>}>
+          <p>{ex.notes.join(" ")}</p>
+          {ex.discrepancies.length > 0 && <ul className="small" style={{ margin: 0 }}>{ex.discrepancies.map((d) => <li key={d}>{d}</li>)}</ul>}
+          <details>
             <summary>Check the {r.courses.length} courses we found</summary>
             <div className="table-wrap" style={{ marginTop: 10 }}>
               <table>
@@ -98,51 +99,68 @@ export default function StudentHome() {
             </div>
             <p className="small" style={{ marginTop: 8 }}>Something wrong? Your plan uses the record as printed. Tell the Registrar or an advisor, and use <b>Start over</b> to reload a corrected copy.</p>
           </details>
-        </Card>
+        </Step>
       )}
 
-      <Card title="2. Your academic profile">
+      <Step n={2} title="Your academic profile" chip={s.profile ? <span className="badge b-neutral">{s.profile.generatedBy === "claude" ? "Written by Claude from your transcript" : "Rule-based"}</span> : undefined}>
         {s.profiling && <p><span className="spin" aria-hidden /> Reading your transcript…</p>}
         {!s.profile && !s.profiling && <p className="small">No profile yet. <button className="btn btn-sm" onClick={() => void s.refreshProfile()}>Build my profile</button></p>}
         {s.profile && (
-          <div className="stack">
-            <p style={{ fontSize: 18 }}>{s.profile.headline} <span className="badge b-neutral">{s.profile.generatedBy === "claude" ? "Written by Claude from your transcript" : "Rule-based"}</span></p>
-            <div className="grid grid-2">
-              <ClaimList title="Strengths" items={s.profile.strengths} />
-              <ClaimList title="Interests" items={s.profile.interests} />
-              <ClaimList title="Watch-outs" items={s.profile.risks} />
-              <ClaimList title="Gaps to close" items={s.profile.gaps} />
+          <>
+            <p style={{ fontSize: 18 }}>{s.profile.headline}</p>
+            <div className="conf-cols">
+              {claimsByConfidence(s.profile).map(({ level, items }) => (
+                <div key={level} className={`conf-col ${level}`}>
+                  <h3><Icon name={level === "high" ? "check" : level === "medium" ? "info" : "alert"} size={16} />{level === "high" ? "High" : level === "medium" ? "Medium" : "Low"} confidence</h3>
+                  {items.map((c) => (
+                    <div key={`${c.kind}-${c.claim}`} className="claim">
+                      <span className="type-chip"><Icon name={TYPE_LABEL[c.kind].icon} size={12} />{TYPE_LABEL[c.kind].text}</span>
+                      <span>{c.claim}</span>
+                      <span className="small">Based on: {c.evidence.join(", ")}</span>
+                    </div>
+                  ))}
+                  {!items.length && <p className="small" style={{ color: "inherit" }}>Nothing at this level.</p>}
+                </div>
+              ))}
             </div>
             {s.profile.careerPossibilities.length > 0 && (
               <div className="stack" style={{ gap: 8 }}>
                 <h4>Careers to explore (possibilities, not predictions)</h4>
                 <ul className="stack" style={{ gap: 8, paddingLeft: 18, margin: 0 }}>{s.profile.careerPossibilities.map((c) => <li key={c.field}><b>{c.field}.</b> {c.why} <span className="small">Based on: {c.evidence.join(", ")}</span></li>)}</ul>
-                <Link href="/student/careers">See the job market data</Link>
+                <div><Link href="/student/careers">See the job market data</Link></div>
               </div>
             )}
             <details><summary>Is this right? Questions to confirm</summary><ul style={{ marginTop: 8 }}>{s.profile.questionsToConfirm.map((q) => <li key={q}>{q}</li>)}</ul></details>
             <p className="small">{s.profile.limits}{s.profile.removedUnsupported > 0 && ` ${s.profile.removedUnsupported} unsupported claim(s) were removed because they cited courses not on your transcript.`}</p>
-          </div>
+          </>
         )}
-      </Card>
+      </Step>
 
-      <Card title="3. What to take next">
-        {!recs && <p className="small">Claude reads the planning engine&apos;s results and explains what to take next and why, keeping required courses separate from optional ideas.</p>}
-        {recNote && <p className="small" role="status" style={{ marginTop: 6 }}>{recNote}</p>}
-        {recs && (
-          <div className="stack">
-            <p>{recs.summary} <span className="badge b-neutral">{recs.generatedBy === "claude" ? "Explained by Claude" : "Engine facts only"}</span></p>
-            <h4>Required next term</h4>
-            <ul className="stack" style={{ gap: 10, paddingLeft: 18, margin: 0 }}>{recs.nextTerm.map((c) => <li key={c.code}><Link href={`/course/${c.code.replace(/\s/g, "")}`}><b>{c.code}</b></Link> {c.title}. {c.why} <span className="small">({c.satisfies}) {c.sources.map((x) => <Src key={x} id={x} />)}</span></li>)}</ul>
-            {recs.electives.length > 0 && <><h4>Optional, tied to your interests</h4><ul className="stack" style={{ gap: 10, paddingLeft: 18, margin: 0 }}>{recs.electives.map((c) => <li key={c.code}><Link href={`/course/${c.code.replace(/\s/g, "")}`}><b>{c.code}</b></Link> {c.title}. {c.why} <span className="small">Connects to: {c.interestLink}{c.careerLink ? `; career: ${c.careerLink}` : ""}</span></li>)}</ul></>}
-            {recs.watchOuts.length > 0 && <><h4>Watch out for</h4><ul className="stack" style={{ gap: 6, paddingLeft: 18, margin: 0 }}>{recs.watchOuts.map((w) => <li key={w}>{w}</li>)}</ul></>}
-            {recs.tradeoffs && <><h4>Trade-offs between paths</h4><p>{recs.tradeoffs}</p></>}
-            {recs.questionsForAdvisor.length > 0 && <><h4>Questions for your advisor</h4><ul className="stack" style={{ gap: 6, paddingLeft: 18, margin: 0 }}>{recs.questionsForAdvisor.map((w) => <li key={w}>{w}</li>)}</ul></>}
-            <p className="small">Required courses come from the engine. Electives are suggestions only. {recs.removedUnsupported > 0 && `${recs.removedUnsupported} suggestion(s) were removed because they were not in the catalog or plan.`}</p>
+      <Step n={3} tone="tint" title="What to take next" chip={<button className="btn btn-sm" onClick={getRecs} disabled={recBusy}>{recBusy ? "Working…" : recs ? "Refresh recommendations" : "Get my recommendations"} <Icon name="arrow" size={14} /></button>}>
+        {!recs && <p className="small">Claude reads the planning engine&apos;s results and explains what to take next and why. Required courses stay separate from optional ideas.</p>}
+        {recNote && <p className="small" role="status">{recNote}</p>}
+        {recs && <p>{recs.summary} <span className="badge b-neutral">{recs.generatedBy === "claude" ? "Explained by Claude" : "Engine facts only"}</span></p>}
+        <div className="three">
+          <div className="mini">
+            <h3><Icon name="book" size={16} />Required next term</h3>
+            <span className="badge b-ok" style={{ alignSelf: "flex-start" }}>From the planning engine</span>
+            {recs ? <ul className="stack" style={{ gap: 10, paddingLeft: 18, margin: 0 }}>{recs.nextTerm.map((c) => <li key={c.code}><Link href={`/course/${c.code.replace(/\s/g, "")}`}><b>{c.code}</b></Link> {c.title}. {c.why} <span className="small">({c.satisfies}) {c.sources.map((x) => <Src key={x} id={x} />)}</span></li>)}</ul> : <p className="small">Appears after you ask for recommendations.</p>}
           </div>
-        )}
-        <div style={{ marginTop: 14 }}><button className="btn btn-sm" onClick={getRecs} disabled={recBusy}>{recBusy ? "Working…" : recs ? "Refresh recommendations" : "Get recommendations"}</button></div>
-      </Card>
+          <div className="mini">
+            <h3><Icon name="bulb" size={16} />Optional, tied to your interests</h3>
+            <span className="badge b-info" style={{ alignSelf: "flex-start" }}>Suggestions only</span>
+            {recs ? (recs.electives.length ? <ul className="stack" style={{ gap: 10, paddingLeft: 18, margin: 0 }}>{recs.electives.map((c) => <li key={c.code}><Link href={`/course/${c.code.replace(/\s/g, "")}`}><b>{c.code}</b></Link> {c.title}. {c.why} <span className="small">Connects to: {c.interestLink}{c.careerLink ? `; career: ${c.careerLink}` : ""}</span></li>)}</ul> : <p className="small">No optional suggestions this time.</p>) : <p className="small">Appears after you ask for recommendations.</p>}
+          </div>
+          <div className="mini">
+            <h3><Icon name="user" size={16} />Questions for your advisor</h3>
+            <span className="badge b-warn" style={{ alignSelf: "flex-start" }}>Bring to your meeting</span>
+            {recs ? (recs.questionsForAdvisor.length ? <ul className="stack" style={{ gap: 6, paddingLeft: 18, margin: 0 }}>{recs.questionsForAdvisor.map((w) => <li key={w}>{w}</li>)}</ul> : <p className="small">None this time.</p>) : <p className="small">Appears after you ask for recommendations.</p>}
+          </div>
+        </div>
+        {recs && recs.watchOuts.length > 0 && <div><h4>Watch out for</h4><ul className="stack" style={{ gap: 6, paddingLeft: 18, margin: "6px 0 0" }}>{recs.watchOuts.map((w) => <li key={w}>{w}</li>)}</ul></div>}
+        {recs && recs.tradeoffs && <div><h4>Trade-offs between paths</h4><p>{recs.tradeoffs}</p></div>}
+        <p className="small">{recs ? `Required courses come from the engine. Electives are suggestions only. ${recs.removedUnsupported > 0 ? `${recs.removedUnsupported} suggestion(s) were removed because they were not in the catalog or plan. ` : ""}` : ""}Also covers watch-outs and trade-offs between paths. Nothing here replaces advisor approval.</p>
+      </Step>
 
       <div className="grid grid-3">
         <Card><h3>My plan</h3><p className="small" style={{ margin: "6px 0 12px" }}>Semester by semester, with findings and sources.</p><Link className="btn btn-sm" href="/student/plan">Open plan</Link></Card>

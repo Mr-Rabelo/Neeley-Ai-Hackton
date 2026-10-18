@@ -1,11 +1,17 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import type { PlanResult, RequirementStatus, StudentRecord } from "@/lib/types";
+import { buildYearGroups, defaultYearIndex, findingSummary, type CompletedTerm, type YearGroup } from "@/lib/plan-view";
 import { AvailText, Card, ConfBadge, FindingCard, Src, SourceList } from "./Bits";
+import { Collapse, Icon, Stat } from "./ui";
 
 const pretty = (c: string) => c.replace(/^([A-Z]+)(\d+)$/, "$1 $2");
 const hoursLabel = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
+const termOrder = (termId: string) => {
+  const [y, n] = termId.split("-");
+  return Number(y) * 3 + ({ Spring: 0, Summer: 1, Fall: 2 } as Record<string, number>)[n];
+};
 
 export function RequirementRow({ r }: { r: RequirementStatus }) {
   const total = Math.max(r.hoursNeeded, 0.0001);
@@ -28,12 +34,108 @@ export function RequirementRow({ r }: { r: RequirementStatus }) {
   );
 }
 
+function Journey({ groups, finish, planStart }: { groups: YearGroup[]; finish: string | null; planStart: boolean }) {
+  const here = groups.findIndex((g) => g.status === "current");
+  const SHORT: Record<string, string> = { Freshman: "Fr", Sophomore: "So", Junior: "Jr", Senior: "Sr" };
+  const short = (g: YearGroup) => SHORT[g.name] ?? g.name.replace("Year ", "Y");
+  return (
+    <div className="journey" aria-label="Your path to graduation">
+      <div className="journey-track">
+        {groups.map((g, i) => (
+          <div key={g.ay} style={{ display: "contents" }}>
+            <div className={`j-node ${i < here || (here < 0 && g.status === "completed") ? "done" : ""} ${i === here ? "here" : ""}`}>
+              <span className="j-dot">{(i < here || (here < 0 && g.status === "completed")) && <Icon name="check" size={11} />}</span>
+              <span>{short(g)}</span>
+            </div>
+            <span className={`j-line ${i < here ? "done" : ""}`} />
+          </div>
+        ))}
+        <div className="j-node grad"><span className="j-dot"><Icon name="cap" size={14} /></span><span>Grad</span></div>
+      </div>
+      <div className="journey-meta">
+        <span>{here >= 0 ? <>You are here: <b>{groups[here].name}{groups[here].name.startsWith("Year") ? "" : " year"}</b></> : planStart ? "Sample plan from zero credits" : " "}</span>
+        <span>Finish: <b>{finish ?? "not within the window"}</b></span>
+      </div>
+    </div>
+  );
+}
+
+function CompletedTermCard({ t }: { t: CompletedTerm }) {
+  return (
+    <div className="sem">
+      <div className="sem-head"><h4>{t.label}</h4><span className="small mono">{hoursLabel(t.hours)} hrs earned</span></div>
+      <div className="tiles">
+        {t.courses.map((c) => (
+          <div key={c.code} className="tile">
+            <Link href={`/course/${c.code}`}>{pretty(c.code)}</Link>
+            <span>{c.title}</span>
+            <span className="meta">{hoursLabel(c.hours)} hrs · {c.grade}{c.transfer ? " · transfer" : ""}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function PlanView({ plan, record }: { plan: PlanResult; record?: StudentRecord | null }) {
+  const groups = useMemo(() => buildYearGroups(plan, record), [plan, record]);
+  const [yi, setYi] = useState(() => defaultYearIndex(groups));
+  const [showAll, setShowAll] = useState(false);
   const [filter, setFilter] = useState<"all" | "blocker" | "warning" | "info">("all");
-  const findings = plan.findings.filter((f) => filter === "all" || (filter === "info" ? f.severity === "info" : f.severity === filter));
-  const counts = { blocker: plan.findings.filter((f) => f.severity === "blocker").length, warning: plan.findings.filter((f) => f.severity === "warning").length, info: plan.findings.filter((f) => f.severity === "info").length };
-  const inProgress = record?.courses.filter((c) => c.status === "in_progress") ?? [];
-  const reqs = plan.requirements;
+  const sum = findingSummary(plan);
+  const list = plan.findings.filter((f) => filter === "all" || f.severity === filter);
+  const g = groups[Math.min(yi, Math.max(0, groups.length - 1))];
+  const earlier = groups.slice(0, Math.max(0, yi)).filter((x) => x.completed.length > 0);
+  const earlierTerms = earlier.flatMap((x) => x.completed);
+  const earlierHours = earlier.reduce((a, x) => a + x.earnedHours, 0);
+  const earlierTransfer = earlier.reduce((a, x) => a + x.transferHours, 0);
+  const groupsDone = plan.requirements.filter((r) => r.status === "complete").length;
+
+  type Sem = { termId: string; node: ReactNode };
+  const sems: Sem[] = g
+    ? [
+        ...g.completed.map((t) => ({ termId: t.termId, node: <CompletedTermCard key={`c-${t.termId}`} t={t} /> })),
+        ...(g.inProgress
+          ? [{
+              termId: g.inProgress.termId,
+              node: (
+                <div key="now" className="sem now">
+                  <div className="sem-head"><h4>{g.inProgress.label}</h4><span className="badge b-neutral">In progress now</span></div>
+                  <div className="tiles">
+                    {g.inProgress.courses.map((c) => (
+                      <div key={c.code} className="tile now">
+                        <Link href={`/course/${c.code}`}>{pretty(c.code)}</Link>
+                        <span>{c.title}</span>
+                        <span className="meta">{hoursLabel(c.hours)} hrs · grade pending</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="small">{hoursLabel(g.inProgress.hours)} hours</div>
+                </div>
+              ),
+            }]
+          : []),
+        ...g.planned.map((t) => ({
+          termId: t.termId,
+          node: (
+            <div key={t.termId} className="sem">
+              <div className="sem-head"><h4>{t.label}</h4><span className="small mono">{hoursLabel(t.credits)} hrs</span></div>
+              <div className="tiles">
+                {t.courses.map((c) => (
+                  <div key={c.code} className={`tile ${c.placeholder ? "slot" : ""}`}>
+                    {c.placeholder ? <b>{c.title}</b> : <Link href={`/course/${c.code}`}>{pretty(c.code)} <span style={{ fontWeight: 400, color: "var(--fg)" }}>{c.title}</span></Link>}
+                    <span className="meta">{hoursLabel(c.credits)} hrs · {c.satisfies[0] ?? ""}</span>
+                    {!c.placeholder && <span className="meta"><AvailText a={c.availability} /></span>}
+                    {c.placeholder && <span className="meta">Placeholder: any approved course. No specific course is recommended.</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ),
+        })),
+      ].sort((a, b) => termOrder(a.termId) - termOrder(b.termId))
+    : [];
+
   return (
     <div className="stack-lg">
       <div className="banner" role="status">
@@ -43,70 +145,83 @@ export function PlanView({ plan, record }: { plan: PlanResult; record?: StudentR
         </div>
       </div>
 
-      <div className="grid grid-4">
-        <Card className="card-tint">
-          <div className="small">Earliest finish</div>
-          <h3 style={{ fontSize: 26 }}>{plan.earliestGraduation.label ?? "Not within the window"}</h3>
-          <div style={{ marginTop: 8 }}><ConfBadge c={plan.earliestGraduation.confidence} /></div>
-          <p className="small" style={{ marginTop: 8 }}>Based on current information. Not a guarantee of graduation eligibility.</p>
-        </Card>
-        <Card><div className="small">Total credit hours</div><h3 style={{ fontSize: 26 }}>{hoursLabel(plan.totalCredits)}</h3><p className="small">{plan.remainingCredits} left to reach 120</p></Card>
-        <Card><div className="small">Peak load</div><h3 style={{ fontSize: 26 }}>{hoursLabel(plan.peakCredits)} hrs</h3><p className="small">in one term{plan.summerUsed ? ", includes summer" : ", no summer"}</p></Card>
-        <Card><div className="small">Plan completeness</div><h3 style={{ fontSize: 26 }}>{Math.round(plan.completeness * 100)}%</h3><p className="small">Share of required inputs that were present and sourced. Section times and seats are missing.</p></Card>
+      {groups.length > 0 && <Journey groups={groups} finish={plan.earliestGraduation.label} planStart={!record || record.courses.length === 0} />}
+
+      <div className="stat-grid">
+        <Stat tone="tint" icon="flag" label="Earliest finish" value={plan.earliestGraduation.label ?? "Not within the window"} note="Based on current information. Not a guarantee of graduation eligibility.">
+          <div><ConfBadge c={plan.earliestGraduation.confidence} /></div>
+        </Stat>
+        <Stat icon="layers" label="Total credit hours" value={hoursLabel(plan.totalCredits)} note={`${plan.remainingCredits} left to reach 120`} />
+        <Stat icon="chart" label="Peak load" value={`${hoursLabel(plan.peakCredits)} hrs`} note={`in one term${plan.summerUsed ? ", includes summer" : ", no summer"}`} />
+        <Stat icon="checksq" label="Plan completeness" value={`${Math.round(plan.completeness * 100)}%`} note="Share of required inputs that were present and sourced. Section times and seats are missing." />
       </div>
 
       {plan.bottleneck && (
-        <Card className="card-tint">
+        <div className="callout">
           <div className="eyebrow">Sharpest bottleneck</div>
-          <h3 style={{ margin: "6px 0" }}><Link href={`/course/${plan.bottleneck.code}`}>{pretty(plan.bottleneck.code)}</Link> {plan.bottleneck.title}</h3>
+          <h3><Link href={`/course/${plan.bottleneck.code}`}>{pretty(plan.bottleneck.code)}</Link> {plan.bottleneck.title}</h3>
           <p>{plan.bottleneck.why}</p>
-        </Card>
+        </div>
       )}
 
       <section aria-labelledby="terms-h" className="stack">
-        <h2 id="terms-h">Semester by semester</h2>
-        <div className="terms">
-          {inProgress.length > 0 && record && (
-            <div className="term" style={{ borderColor: "var(--accent)" }}>
-              <div className="term-head"><h4>{record.currentTermId.replace("-", " ")}</h4><span className="badge b-neutral">In progress now</span></div>
-              {inProgress.map((c) => (
-                <div key={c.code} className="course current">
-                  <Link href={`/course/${c.code}`}>{pretty(c.code)}</Link>
-                  <span>{c.title}</span>
-                  <span className="meta">{c.attempted} hrs · grade pending</span>
-                </div>
-              ))}
-              <div className="small">{inProgress.reduce((a, c) => a + c.attempted, 0)} hours</div>
-            </div>
-          )}
-          {plan.terms.map((t) => (
-            <div key={t.termId} className="term">
-              <div className="term-head"><h4>{t.label}</h4><span className="small mono">{hoursLabel(t.credits)} hrs</span></div>
-              {t.courses.map((c) => (
-                <div key={c.code} className={`course ${c.placeholder ? "placeholder" : ""}`}>
-                  {c.placeholder ? <b>{c.title}</b> : <Link href={`/course/${c.code}`}>{pretty(c.code)} <span style={{ fontWeight: 400 }}>{c.title}</span></Link>}
-                  <span className="meta">{hoursLabel(c.credits)} hrs · {c.satisfies[0] ?? ""}</span>
-                  {!c.placeholder && <span className="meta"><AvailText a={c.availability} /></span>}
-                  {c.placeholder && <span className="meta">Placeholder: any approved course. No specific course is recommended.</span>}
-                </div>
-              ))}
-            </div>
+        <div className="row-between">
+          <h2 id="terms-h">Year by year</h2>
+          <span className="small">{record && record.courses.length > 0 ? "Year labels follow your start term, not official class standing." : "A sample from zero credits."}</span>
+        </div>
+        <div className="yeartabs" role="tablist" aria-label="Choose a year">
+          {groups.map((x, i) => (
+            <button key={x.ay} role="tab" aria-selected={i === yi} className="yeartab" onClick={() => setYi(i)}>
+              <b>{x.name} {x.status === "completed" && <span className="tick" aria-label="completed">✓</span>}</b>
+              <span>{x.range}{x.status === "current" ? " · now" : ""}</span>
+            </button>
           ))}
         </div>
+        {earlierTerms.length > 0 && (
+          <Collapse title="Completed before this year" hint={`${hoursLabel(earlierHours)} hrs earned${earlierTransfer ? ` · incl. ${hoursLabel(earlierTransfer)} transfer` : ""} · show ${earlierTerms.map((t) => t.label).join(" and ")} courses`}>
+            <div className="sem-grid">{earlierTerms.map((t) => <CompletedTermCard key={t.termId} t={t} />)}</div>
+          </Collapse>
+        )}
+        {g && (
+          <div className="stack" role="tabpanel">
+            <div className="row-between">
+              <span className="badge b-neutral">{g.name} · {g.range}</span>
+              <span className="small mono">{g.status === "completed" ? `${hoursLabel(g.earnedHours)} hrs earned` : `${hoursLabel(g.plannedHours + (g.inProgress?.hours ?? 0))} hrs this year`}</span>
+            </div>
+            <div className="sem-grid">{sems.map((s) => s.node)}</div>
+            {sems.length === 0 && <p className="small">Nothing scheduled in this year.</p>}
+          </div>
+        )}
       </section>
 
       <section aria-labelledby="find-h" className="stack">
         <div className="row-between">
           <h2 id="find-h">What the engine found</h2>
-          <div className="tabs" role="tablist" aria-label="Filter findings">
-            {(["all", "blocker", "warning", "info"] as const).map((k) => (
-              <button key={k} role="tab" aria-selected={filter === k} className="tab" onClick={() => setFilter(k)}>
-                {k === "all" ? `All (${plan.findings.length})` : k === "blocker" ? `Blockers (${counts.blocker})` : k === "warning" ? `Warnings (${counts.warning})` : `Notes (${counts.info})`}
-              </button>
-            ))}
+          <div className="row" style={{ gap: 8 }}>
+            <span className="badge b-bad">Blockers ({sum.blocker})</span>
+            <span className="badge b-warn">Warnings ({sum.warning})</span>
+            <span className="badge b-info">Notes ({sum.info})</span>
           </div>
         </div>
-        <div className="stack">{findings.map((f) => <FindingCard key={f.id} f={f} />)}{!findings.length && <p className="small">Nothing in this group.</p>}</div>
+        {!showAll ? (
+          <>
+            <p className="small">Top priorities: blockers first, then warnings.</p>
+            <div className="stack">{plan.findings.slice(0, 3).map((f) => <FindingCard key={f.id} f={f} />)}</div>
+            {plan.findings.length > 3 && <div><button className="btn btn-ghost btn-sm" onClick={() => setShowAll(true)}>See all {plan.findings.length} findings <Icon name="arrow" size={14} /></button></div>}
+          </>
+        ) : (
+          <>
+            <div className="tabs" role="tablist" aria-label="Filter findings">
+              {(["all", "blocker", "warning", "info"] as const).map((k) => (
+                <button key={k} role="tab" aria-selected={filter === k} className="tab" onClick={() => setFilter(k)}>
+                  {k === "all" ? `All (${sum.total})` : k === "blocker" ? `Blockers (${sum.blocker})` : k === "warning" ? `Warnings (${sum.warning})` : `Notes (${sum.info})`}
+                </button>
+              ))}
+            </div>
+            <div className="stack">{list.map((f) => <FindingCard key={f.id} f={f} />)}{!list.length && <p className="small">Nothing in this group.</p>}</div>
+            <div><button className="btn btn-ghost btn-sm" onClick={() => { setShowAll(false); setFilter("all"); }}>Show fewer</button></div>
+          </>
+        )}
       </section>
 
       <div className="grid grid-2">
@@ -124,12 +239,13 @@ export function PlanView({ plan, record }: { plan: PlanResult; record?: StudentR
         </Card>
       </div>
 
-      <section aria-labelledby="req-h" className="stack">
-        <h2 id="req-h">Requirements: what is done and what is left</h2>
-        <Card><div className="stack" style={{ gap: 20 }}>{reqs.map((r) => <RequirementRow key={r.id} r={r} />)}</div></Card>
-      </section>
+      <Collapse title="Requirements: what is done and what is left" hint={`${groupsDone} of ${plan.requirements.length} groups complete`}>
+        <div className="stack" style={{ gap: 20 }}>{plan.requirements.map((r) => <RequirementRow key={r.id} r={r} />)}</div>
+      </Collapse>
 
-      <Card title="Sources"><SourceList sources={plan.sources} /></Card>
+      <Collapse title="Sources" hint={`${plan.sources.length} records`}>
+        <SourceList sources={plan.sources} />
+      </Collapse>
     </div>
   );
 }

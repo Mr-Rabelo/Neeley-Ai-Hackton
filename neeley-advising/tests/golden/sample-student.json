@@ -1,0 +1,1127 @@
+{
+ "plan": {
+  "earliestGraduation": {
+   "termId": "2029-Spring",
+   "label": "Spring 2029",
+   "confidence": "assumption"
+  },
+  "totalCredits": 129,
+  "remainingCredits": 64,
+  "peakCredits": 15,
+  "summerUsed": false,
+  "completeness": 0.39,
+  "bottleneck": {
+   "code": "INSC20263",
+   "title": "Business Information Systems",
+   "descendants": 5,
+   "offeredTerms": 2,
+   "slipTerms": 1,
+   "why": "INSC 20263 unlocks 5 other planned courses and is fall and spring (historical pattern). Missing it once pushes the finish back about 1 term."
+  },
+  "slips": [
+   {
+    "code": "INSC20263",
+    "title": "Business Information Systems",
+    "slipTerms": 1
+   },
+   {
+    "code": "FINA30153",
+    "title": "Financial Management",
+    "slipTerms": 0
+   },
+   {
+    "code": "INSC30723",
+    "title": "Business Process Analysis",
+    "slipTerms": 1
+   },
+   {
+    "code": "INSC30823",
+    "title": "Data Management for Business Information Systems",
+    "slipTerms": 1
+   },
+   {
+    "code": "FINA30203",
+    "title": "Financial Institutions and Markets",
+    "slipTerms": 0
+   },
+   {
+    "code": "INSC30833",
+    "title": "Business Information Systems Development",
+    "slipTerms": 1
+   },
+   {
+    "code": "INSC30853",
+    "title": "Fundamentals of Cybersecurity",
+    "slipTerms": 1
+   },
+   {
+    "code": "INSC30313",
+    "title": "Supply Chain Management",
+    "slipTerms": 0
+   },
+   {
+    "code": "INSC30801",
+    "title": "Business Applications in Excel",
+    "slipTerms": 0
+   },
+   {
+    "code": "FINA30213",
+    "title": "Investments",
+    "slipTerms": 0
+   },
+   {
+    "code": "ACCT30153",
+    "title": "Financial Reporting I",
+    "slipTerms": 0
+   },
+   {
+    "code": "INSC40813",
+    "title": "Business Information Systems Capstone",
+    "slipTerms": 1
+   },
+   {
+    "code": "INSC40843",
+    "title": "Business Intelligence and Analytics",
+    "slipTerms": 0
+   },
+   {
+    "code": "ENTR20263",
+    "title": "Entrepreneurship and Innovation",
+    "slipTerms": 1
+   },
+   {
+    "code": "MANA30250",
+    "title": "Organizational Behavior",
+    "slipTerms": 0
+   },
+   {
+    "code": "MANA40250",
+    "title": "Strategy",
+    "slipTerms": 1
+   },
+   {
+    "code": "BUSI30383",
+    "title": "Global Business with an Ethical Lens",
+    "slipTerms": 0
+   }
+  ],
+  "openCredits": 2,
+  "terms": [
+   {
+    "termId": "2027-Spring",
+    "credits": 14.5,
+    "courses": [
+     [
+      "FINA30153",
+      3,
+      false,
+      [
+       "Upper-division business core"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "INSC20263",
+      3,
+      false,
+      [
+       "Lower-division business requirements"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "ACCT30153",
+      3,
+      false,
+      [
+       "Finance: required courses"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "INSC30313",
+      3,
+      false,
+      [
+       "Upper-division business core"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "INSC30801",
+      1,
+      false,
+      [
+       "Upper-division business core"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "MANA30250",
+      1.5,
+      false,
+      [
+       "Upper-division business core"
+      ],
+      "assumption"
+     ]
+    ]
+   },
+   {
+    "termId": "2027-Fall",
+    "credits": 15,
+    "courses": [
+     [
+      "INSC30823",
+      3,
+      false,
+      [
+       "Business Information Systems: required courses"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "INSC30723",
+      3,
+      false,
+      [
+       "Business Information Systems: required courses"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "FINA30203",
+      3,
+      false,
+      [
+       "Finance: required courses"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "FINA30213",
+      3,
+      false,
+      [
+       "Finance: required courses"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "INSC40843",
+      3,
+      false,
+      [
+       "Business Information Systems: required courses"
+      ],
+      "historical_pattern"
+     ]
+    ]
+   },
+   {
+    "termId": "2028-Spring",
+    "credits": 15,
+    "courses": [
+     [
+      "INSC30833",
+      3,
+      false,
+      [
+       "Business Information Systems: required courses"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "INSC30853",
+      3,
+      false,
+      [
+       "Business Information Systems: required courses"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "ACCT30253",
+      3,
+      false,
+      [
+       "Finance: required courses"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "ACCT30303",
+      3,
+      false,
+      [
+       "Finance: Electives: 6 hours of finance electives"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "FINA30233",
+      3,
+      false,
+      [
+       "Finance: required courses"
+      ],
+      "historical_pattern"
+     ]
+    ]
+   },
+   {
+    "termId": "2028-Fall",
+    "credits": 15,
+    "courses": [
+     [
+      "INSC40813",
+      3,
+      false,
+      [
+       "Business Information Systems: required courses"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "FINA30303",
+      3,
+      false,
+      [
+       "Finance: Electives: 6 hours of finance electives"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "FINA40153",
+      3,
+      false,
+      [
+       "Finance: required courses"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "INSC40383",
+      3,
+      false,
+      [
+       "Business Information Systems: required courses"
+      ],
+      "historical_pattern"
+     ],
+     [
+      "BUSI30383",
+      3,
+      false,
+      [
+       "Business Information Systems: associated requirements",
+       "Finance: Associated: one of International Finance or Global Business with an Ethical Lens"
+      ],
+      "assumption"
+     ]
+    ]
+   },
+   {
+    "termId": "2029-Spring",
+    "credits": 13.5,
+    "courses": [
+     [
+      "ENTR20263",
+      3,
+      false,
+      [
+       "Upper-division business core"
+      ],
+      "assumption"
+     ],
+     [
+      "MANA40250",
+      1.5,
+      false,
+      [
+       "Upper-division business core"
+      ],
+      "assumption"
+     ],
+     [
+      "CORE-humanities-1",
+      3,
+      true,
+      [
+       "Core Curriculum: Humanities"
+      ],
+      "assumption"
+     ],
+     [
+      "CORE-literary-1",
+      3,
+      true,
+      [
+       "Core Curriculum: Literary Traditions"
+      ],
+      "assumption"
+     ],
+     [
+      "CORE-oral-1",
+      3,
+      true,
+      [
+       "Core Curriculum: Oral Communication"
+      ],
+      "assumption"
+     ]
+    ]
+   }
+  ],
+  "findings": [
+   [
+    "warning",
+    "prereq",
+    "MARK 30153 is in progress this term, but its prerequisite INSC 20153 is also in progress in the same term.",
+    "Ask the Neeley Academic Advising Center whether an override or a corequisite arrangement applies (for example a cohort or honors section).",
+    "confirmed",
+    true,
+    [
+     "S1",
+     "S3"
+    ]
+   ],
+   [
+    "warning",
+    "prereq",
+    "FINA 30153 needs a C- or better in ACCT 20353, which is still in progress. The plan assumes it will be earned.",
+    "Recheck after final grades post.",
+    "assumption",
+    false,
+    [
+     "S1",
+     "S3"
+    ]
+   ],
+   [
+    "warning",
+    "prereq",
+    "FINA 30153 needs a C- or better in INSC 20153, which is still in progress. The plan assumes it will be earned.",
+    "Recheck after final grades post.",
+    "assumption",
+    false,
+    [
+     "S1",
+     "S3"
+    ]
+   ],
+   [
+    "warning",
+    "prereq",
+    "ACCT 30153 needs a C- or better in ACCT 20353, which is still in progress. The plan assumes it will be earned.",
+    "Recheck after final grades post.",
+    "assumption",
+    false,
+    [
+     "S1",
+     "S3"
+    ]
+   ],
+   [
+    "warning",
+    "prereq",
+    "ACCT 30253 needs a C- or better in ACCT 20353, which is still in progress. The plan assumes it will be earned.",
+    "Recheck after final grades post.",
+    "assumption",
+    false,
+    [
+     "S1",
+     "S3"
+    ]
+   ],
+   [
+    "warning",
+    "prereq",
+    "ACCT 30303 needs a C- or better in ACCT 20353, which is still in progress. The plan assumes it will be earned.",
+    "Recheck after final grades post.",
+    "assumption",
+    false,
+    [
+     "S1",
+     "S3"
+    ]
+   ],
+   [
+    "warning",
+    "missing_info",
+    "The prerequisite wording for FINA 30233, FINA 40153 mixes \"and\" and \"or\", so the engine could not be sure how to read it. It used the most likely reading.",
+    "Have an advisor read the catalog wording for these courses.",
+    "assumption",
+    true,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "warning",
+    "missing_info",
+    "The catalog cites MANA 30350 as a prerequisite or corequisite for MANA 30250, but MANA 30350 is not a course in the supplied catalog. The engine ignored it.",
+    "Ask an advisor what the intended requirement is (it may be a catalog typo).",
+    "assumption",
+    true,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "warning",
+    "unverified",
+    "ENTR 20263: The catalog gives no typical offering for this course. The plan assumes it will run in Spring 2029.",
+    "Confirm with the department before relying on this term.",
+    "assumption",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "warning",
+    "unverified",
+    "MANA 30250: The catalog gives no typical offering for this course. The plan assumes it will run in Spring 2027.",
+    "Confirm with the department before relying on this term.",
+    "assumption",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "warning",
+    "unverified",
+    "MANA 40250: The catalog gives no typical offering for this course. The plan assumes it will run in Spring 2029.",
+    "Confirm with the department before relying on this term.",
+    "assumption",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "warning",
+    "unverified",
+    "BUSI 30383: Catalog says: \"Study Abroad Course\". Offering must be confirmed with the department. The plan assumes it will run in Fall 2028.",
+    "Confirm with the department before relying on this term.",
+    "assumption",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "warning",
+    "missing_info",
+    "The record's requirement term is Fall 2025 (catalog 2025-26), but the supplied catalog is 2026-2027. Requirements may differ for your catalog year.",
+    "Ask an advisor to confirm which catalog year governs your degree.",
+    "confirmed",
+    true,
+    [
+     "S1",
+     "S3"
+    ]
+   ],
+   [
+    "warning",
+    "missing_info",
+    "14 transfer hours (COMM 10123, ENGL 20000, MATH 10054, PSYC 10213) are counted toward total hours only. Whether they satisfy BBA Core or business requirements was not evaluated, so they are counted as zero toward those requirements.",
+    "Ask the Neeley Academic Advising Center to evaluate them for the BBA. If they count, some Core requirements may already be met.",
+    "assumption",
+    true,
+    [
+     "S2",
+     "S3"
+    ]
+   ],
+   [
+    "warning",
+    "policy",
+    "6 of the 6 pass/no-credit hours business students may use are already spent. Any future P/NC course would exceed the limit.",
+    "Take remaining courses for a letter grade.",
+    "confirmed",
+    false,
+    [
+     "S2",
+     "S3"
+    ]
+   ],
+   [
+    "warning",
+    "policy",
+    "You are planning 2 majors (Business Information Systems and Finance). The catalog says to confirm the hours for a double major with an advisor, and it does not state which courses may count toward both.",
+    "Ask the Neeley Academic Advising Center how shared courses (for example BUSI 30383 or ACCT courses) are counted.",
+    "assumption",
+    true,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "warning",
+    "policy",
+    "INSC 20263 must be completed in the semester you acknowledge a business major. The record already lists the major, but INSC 20263 is not complete or in progress.",
+    "Take it next term and ask an advisor how this affects advancement into the major.",
+    "confirmed",
+    true,
+    [
+     "S1",
+     "S3"
+    ]
+   ],
+   [
+    "warning",
+    "delay",
+    "Sharpest bottleneck: INSC 20263 unlocks 5 other planned courses and is fall and spring (historical pattern). Missing it once pushes the finish back about 1 term.",
+    "Register for it in the planned term; have a backup term in mind.",
+    "historical_pattern",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "info",
+    "missing_info",
+    "17 planned courses also carry non-course conditions (for example \"declared business major\", class standing, permission). The engine does not verify these.",
+    "Review the conditions on the course page before registering.",
+    "assumption",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "info",
+    "unverified",
+    "19 planned courses rely on the catalog's \"typically offered\" pattern. That is a usual pattern, not a published schedule, and not a promise.",
+    "Check the official schedule when registration opens.",
+    "historical_pattern",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "info",
+    "missing_info",
+    "Meeting times were not checked: no section schedule was supplied. Time conflicts and seat availability cannot be evaluated.",
+    "Confirm sections in the official schedule.",
+    "assumption",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "info",
+    "missing_info",
+    "Course attribute \"Digital Culture and Data Analytics\" on the transcript is not in the Core Curriculum table of the supplied catalog, so it was not applied to any requirement.",
+    "Ask an advisor which Core requirement this satisfies.",
+    "assumption",
+    true,
+    [
+     "S1",
+     "S3"
+    ]
+   ],
+   [
+    "info",
+    "unverified",
+    "Excel and PowerPoint certification (needed to continue as a business student and to enroll in INSC 20153) cannot be seen on a transcript.",
+    "Confirm your certification status with the Neeley Academic Advising Center.",
+    "assumption",
+    false,
+    [
+     "S2"
+    ]
+   ],
+   [
+    "info",
+    "missing_info",
+    "Finance majors need 9 hours of writing-emphasis courses. The catalog designates FINA 30203 and FINA 30213 (6 hours); the third course was not identified in the supplied pages.",
+    "Ask which finance course carries the third writing-emphasis designation.",
+    "assumption",
+    true,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "info",
+    "opportunity",
+    "Based on current information, the earliest finish is Spring 2029, on or before the target of Spring 2029. This is not a guarantee of graduation eligibility.",
+    null,
+    "assumption",
+    false,
+    [
+     "S1",
+     "S3"
+    ]
+   ],
+   [
+    "info",
+    "delay",
+    "Slip test: if INSC 30723 (fall) is missed in Fall 2027, the finish moves back about 1 term.",
+    null,
+    "historical_pattern",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "info",
+    "delay",
+    "Slip test: if INSC 30823 (fall) is missed in Fall 2027, the finish moves back about 1 term.",
+    null,
+    "historical_pattern",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "info",
+    "delay",
+    "Slip test: if INSC 30833 (spring) is missed in Spring 2028, the finish moves back about 1 term.",
+    null,
+    "historical_pattern",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "info",
+    "delay",
+    "Slip test: if INSC 30853 (spring) is missed in Spring 2028, the finish moves back about 1 term.",
+    null,
+    "historical_pattern",
+    false,
+    [
+     "S1"
+    ]
+   ],
+   [
+    "info",
+    "opportunity",
+    "There is room for electives in 2 terms. A minor or career-focused electives could fit without changing the finish date.",
+    "Open the 'What if' view to compare options.",
+    "assumption",
+    false,
+    [
+     "S1"
+    ]
+   ]
+  ],
+  "unverified": [
+   "Prerequisite wording needs human reading: FINA 30233, FINA 40153.",
+   "MANA 30350 is cited in the catalog but does not exist in it (affects MANA 30250).",
+   "ENTR 20263 offering unknown (planned Spring 2029).",
+   "MANA 30250 offering unknown (planned Spring 2027).",
+   "MANA 40250 offering unknown (planned Spring 2029).",
+   "BUSI 30383 offering unknown (planned Fall 2028).",
+   "Future offerings come from the catalog's typical pattern; the schedule for upcoming terms is not published in the supplied data.",
+   "Section meeting times and seat counts are not available.",
+   "Catalog year mismatch: record 2025-26 vs supplied 2026-27.",
+   "Transfer credit (14 hours) not evaluated for the BBA.",
+   "Attribute not mapped to a requirement: Digital Culture and Data Analytics.",
+   "Double-major overlap and hour rules are not stated in the supplied catalog.",
+   "Maximum credit load per term was not found; the plan uses 15 hours per term as an assumption."
+  ],
+  "advisorQuestions": [
+   "MARK 30153 is in progress this term, but its prerequisite INSC 20153 is also in progress in the same term. Ask the Neeley Academic Advising Center whether an override or a corequisite arrangement applies (for example a cohort or honors section).",
+   "The prerequisite wording for FINA 30233, FINA 40153 mixes \"and\" and \"or\", so the engine could not be sure how to read it. Have an advisor read the catalog wording for these courses.",
+   "The catalog cites MANA 30350 as a prerequisite or corequisite for MANA 30250, but MANA 30350 is not a course in the supplied catalog. Ask an advisor what the intended requirement is (it may be a catalog typo).",
+   "The record's requirement term is Fall 2025 (catalog 2025-26), but the supplied catalog is 2026-2027. Ask an advisor to confirm which catalog year governs your degree.",
+   "14 transfer hours (COMM 10123, ENGL 20000, MATH 10054, PSYC 10213) are counted toward total hours only. Ask the Neeley Academic Advising Center to evaluate them for the BBA. If they count, some Core requirements may already be met.",
+   "Course attribute \"Digital Culture and Data Analytics\" on the transcript is not in the Core Curriculum table of the supplied catalog, so it was not applied to any requirement. Ask an advisor which Core requirement this satisfies.",
+   "You are planning 2 majors (Business Information Systems and Finance). Ask the Neeley Academic Advising Center how shared courses (for example BUSI 30383 or ACCT courses) are counted.",
+   "INSC 20263 must be completed in the semester you acknowledge a business major. Take it next term and ask an advisor how this affects advancement into the major.",
+   "Finance majors need 9 hours of writing-emphasis courses. Ask which finance course carries the third writing-emphasis designation."
+  ],
+  "requirements": [
+   [
+    "lower-division",
+    "remaining",
+    9,
+    6,
+    18,
+    [
+     "ENGL10803",
+     "ECON10223",
+     "MATH10283",
+     "ACCT20353",
+     "INSC20153"
+    ],
+    [
+     "INSC20263"
+    ]
+   ],
+   [
+    "business-core",
+    "remaining",
+    0,
+    3,
+    16,
+    [
+     "MARK30153"
+    ],
+    [
+     "ENTR20263",
+     "FINA30153",
+     "INSC30313",
+     "INSC30801",
+     "MANA30250",
+     "MANA40250"
+    ]
+   ],
+   [
+    "bis:required",
+    "remaining",
+    0,
+    0,
+    21,
+    [],
+    [
+     "INSC30723",
+     "INSC30823",
+     "INSC30833",
+     "INSC30853",
+     "INSC40813",
+     "INSC40843",
+     "INSC40383"
+    ]
+   ],
+   [
+    "bis:associated",
+    "remaining",
+    0,
+    0,
+    3,
+    [],
+    [
+     "BUSI30383"
+    ]
+   ],
+   [
+    "finance:required",
+    "remaining",
+    0,
+    0,
+    18,
+    [],
+    [
+     "FINA30203",
+     "FINA30213",
+     "FINA30233",
+     "FINA40153",
+     "ACCT30153",
+     "ACCT30253"
+    ]
+   ],
+   [
+    "finance:associated",
+    "complete",
+    3,
+    0,
+    3,
+    [
+     "ECON10233"
+    ],
+    []
+   ],
+   [
+    "finance:fin-electives",
+    "remaining",
+    0,
+    0,
+    6,
+    [],
+    []
+   ],
+   [
+    "finance:fin-global",
+    "remaining",
+    0,
+    0,
+    3,
+    [],
+    []
+   ],
+   [
+    "core:fine-arts",
+    "complete",
+    3,
+    0,
+    3,
+    [
+     "DANC10453"
+    ],
+    []
+   ],
+   [
+    "core:humanities",
+    "remaining",
+    3,
+    3,
+    9,
+    [
+     "RELI10033",
+     "HNRS20213"
+    ],
+    []
+   ],
+   [
+    "core:social-sciences",
+    "complete",
+    9,
+    0,
+    9,
+    [
+     "CRJU20413",
+     "ECON10223",
+     "ECON10233"
+    ],
+    []
+   ],
+   [
+    "core:historical",
+    "complete",
+    3,
+    0,
+    3,
+    [
+     "PHYS10263"
+    ],
+    []
+   ],
+   [
+    "core:literary",
+    "remaining",
+    0,
+    0,
+    3,
+    [],
+    []
+   ],
+   [
+    "core:religious",
+    "complete",
+    3,
+    0,
+    3,
+    [
+     "RELI10033"
+    ],
+    []
+   ],
+   [
+    "core:mathematics",
+    "complete",
+    3,
+    0,
+    3,
+    [
+     "MATH10283"
+    ],
+    []
+   ],
+   [
+    "core:natural-sciences",
+    "complete",
+    6,
+    0,
+    6,
+    [
+     "BIOL10003",
+     "PHYS10263"
+    ],
+    []
+   ],
+   [
+    "core:oral",
+    "remaining",
+    0,
+    0,
+    3,
+    [],
+    []
+   ],
+   [
+    "core:wco1",
+    "complete",
+    3,
+    0,
+    3,
+    [
+     "ENGL10803"
+    ],
+    []
+   ],
+   [
+    "core:wco2",
+    "complete",
+    3,
+    0,
+    3,
+    [
+     "ENGL20803"
+    ],
+    []
+   ],
+   [
+    "core:cultural",
+    "complete",
+    3,
+    0,
+    3,
+    [
+     "DANC10453",
+     "HNRS20213"
+    ],
+    []
+   ],
+   [
+    "core:global",
+    "complete",
+    3,
+    0,
+    3,
+    [
+     "BIOL10003"
+    ],
+    []
+   ],
+   [
+    "core:citizenship",
+    "complete",
+    3,
+    0,
+    3,
+    [
+     "CRJU20413"
+    ],
+    []
+   ],
+   [
+    "core:writing-emphasis",
+    "remaining",
+    0,
+    0,
+    9,
+    [],
+    []
+   ]
+  ]
+ },
+ "comparison": [
+  [
+   "grad",
+   {
+    "Baseline: your current majors": "Spring 2029",
+    "Add the Accounting Minor": "Fall 2029"
+   },
+   true
+  ],
+  [
+   "credits",
+   {
+    "Baseline: your current majors": "129 (+0 vs baseline)",
+    "Add the Accounting Minor": "132 (+3 vs baseline)"
+   },
+   true
+  ],
+  [
+   "terms",
+   {
+    "Baseline: your current majors": "same",
+    "Add the Accounting Minor": "+1 term"
+   },
+   true
+  ],
+  [
+   "peak",
+   {
+    "Baseline: your current majors": "15 hours",
+    "Add the Accounting Minor": "15 hours"
+   },
+   false
+  ],
+  [
+   "summer",
+   {
+    "Baseline: your current majors": "No",
+    "Add the Accounting Minor": "No"
+   },
+   false
+  ],
+  [
+   "bottleneck",
+   {
+    "Baseline: your current majors": "INSC 20263 (5 dependents)",
+    "Add the Accounting Minor": "INSC 20263 (5 dependents)"
+   },
+   false
+  ],
+  [
+   "slip",
+   {
+    "Baseline: your current majors": "8 of 17",
+    "Add the Accounting Minor": "0 of 17"
+   },
+   true
+  ],
+  [
+   "findings",
+   {
+    "Baseline: your current majors": "0 / 18",
+    "Add the Accounting Minor": "0 / 19"
+   },
+   true
+  ],
+  [
+   "unverified",
+   {
+    "Baseline: your current majors": "13",
+    "Add the Accounting Minor": "13"
+   },
+   false
+  ],
+  [
+   "risk",
+   {
+    "Baseline: your current majors": "14 hours",
+    "Add the Accounting Minor": "14 hours"
+   },
+   false
+  ],
+  [
+   "room",
+   {
+    "Baseline: your current majors": "2 hours",
+    "Add the Accounting Minor": "14 hours"
+   },
+   true
+  ],
+  [
+   "advisor",
+   {
+    "Baseline: your current majors": "9",
+    "Add the Accounting Minor": "1"
+   },
+   true
+  ],
+  [
+   "cost",
+   {
+    "Baseline: your current majors": "Not estimated: no sourced tuition rate supplied",
+    "Add the Accounting Minor": "Not estimated: no sourced tuition rate supplied"
+   },
+   false
+  ]
+ ]
+}

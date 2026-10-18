@@ -5,6 +5,7 @@ import type { ComparisonRow } from "@/lib/types";
 import { useStudent } from "@/components/StudentContext";
 import { Card, NeedStudent } from "@/components/Bits";
 import { PlanView } from "@/components/PlanView";
+import { Collapse, Icon } from "@/components/ui";
 import { ApiError, postJson } from "@/lib/client";
 
 interface Overview { baseline: Alternative; minors: Alternative[]; majorSwitches: Alternative[]; summer: Alternative }
@@ -49,22 +50,37 @@ export default function WhatIf() {
   if (!ready) return <p>Loading…</p>;
   if (!record) return <NeedStudent />;
 
-  const AltCard = ({ a, k, pick }: { a: Alternative; k: string; pick: Pick }) => (
-    <div className="card stack" style={{ gap: 12 }}>
-      <div className="row-between"><h3>{a.title}</h3><span className="badge b-neutral">{a.plan.earliestGraduation.label ?? "No finish in window"}</span></div>
-      <div><b>What you gain</b><ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>{a.gains.map((g) => <li key={g}>{g}</li>)}</ul></div>
-      <div><b>What it costs</b><ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>{a.costs.map((g) => <li key={g}>{g}</li>)}</ul></div>
-      <div><b>What stays the same</b><ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>{a.stays.map((g) => <li key={g}>{g}</li>)}</ul></div>
-      <details><summary>Could not confirm ({a.unverified.length}) and advisor decisions ({a.advisorDecisions.length})</summary>
-        <ul style={{ margin: "8px 0 0", paddingLeft: 18 }}>{a.unverified.map((g) => <li key={g}>{g}</li>)}{a.advisorDecisions.map((g) => <li key={g}><b>Ask an advisor:</b> {g}</li>)}</ul>
-      </details>
-      <div className="row">
-        <label className="check"><input type="checkbox" checked={picks.some((p) => p.key === k)} onChange={() => toggle(k, pick, a)} /> Add to comparison (up to 3)</label>
-        <button className="btn btn-ghost btn-sm" onClick={() => setOpen(open === k ? null : k)}>{open === k ? "Hide full plan" : "See full plan"}</button>
-      </div>
-      {open === k && <PlanView plan={a.plan} record={record} />}
+  const PM = ({ kind, items }: { kind: "gain" | "cost" | "same"; items: string[] }) => (
+    <div className="pm">
+      <div className="pm-label">{kind === "gain" ? "What you gain" : kind === "cost" ? "What it costs" : "What stays the same"}</div>
+      {items.map((g) => (
+        <div key={g} className={`pm-row ${kind}`}>
+          <span className="pm-mark" aria-hidden><Icon name={kind === "gain" ? "plus" : kind === "cost" ? "minus" : "equals"} size={14} /></span>
+          <span>{g}</span>
+        </div>
+      ))}
     </div>
   );
+
+  const AltCard = ({ a, k, pick }: { a: Alternative; k: string; pick: Pick }) => {
+    const picked = picks.some((p) => p.key === k);
+    return (
+      <div className={`alt-card ${picked ? "picked" : ""}`}>
+        <div className="row-between"><h3>{a.title}</h3><span className="badge b-neutral">Finish {a.plan.earliestGraduation.label ?? "not in window"}</span></div>
+        <PM kind="gain" items={a.gains} />
+        <PM kind="cost" items={a.costs} />
+        <PM kind="same" items={a.stays} />
+        <details><summary>Could not confirm ({a.unverified.length}) and advisor decisions ({a.advisorDecisions.length})</summary>
+          <ul style={{ margin: "8px 0 0", paddingLeft: 18 }}>{a.unverified.map((g) => <li key={g}>{g}</li>)}{a.advisorDecisions.map((g) => <li key={g}><b>Ask an advisor:</b> {g}</li>)}</ul>
+        </details>
+        <div className="row">
+          <label className="check"><input type="checkbox" checked={picked} onChange={() => toggle(k, pick, a)} /> {picked ? "In comparison" : "Add to comparison (up to 3)"}</label>
+          <button className="btn btn-ghost btn-sm" onClick={() => setOpen(open === k ? null : k)}>{open === k ? "Hide full plan" : "See full plan"}</button>
+        </div>
+        {open === k && <PlanView plan={a.plan} record={record} />}
+      </div>
+    );
+  };
 
   return (
     <div className="stack-lg">
@@ -73,18 +89,25 @@ export default function WhatIf() {
       {!ov && !err && <p><span className="spin" aria-hidden /> Building the alternatives…</p>}
       {ov && (
         <>
-          {cmp && (
-            <section className="stack" aria-labelledby="cmp-h">
+          <section className="stack" aria-labelledby="cmp-h">
+            <div className="row-between">
               <h2 id="cmp-h">Side by side</h2>
-              <div className="table-wrap">
-                <table>
-                  <thead><tr><th scope="col">&nbsp;</th>{Object.keys(cmp[0].values).map((k) => <th scope="col" key={k}>{k}</th>)}</tr></thead>
-                  <tbody>{cmp.map((r) => <tr key={r.key} className={r.differs ? "differs" : ""}><th scope="row" style={{ background: "transparent", textTransform: "none", letterSpacing: 0, fontSize: 15, color: "inherit" }}>{r.label}</th>{Object.values(r.values).map((v, i) => <td key={i}>{v}</td>)}</tr>)}</tbody>
-                </table>
-              </div>
-              <p className="small">Rows with a purple edge differ between paths. Cost is not estimated because no sourced tuition rate was supplied. No path is ranked: bring this to your advisor.</p>
-            </section>
-          )}
+              <span className="badge b-neutral">{picks.length} of 3 paths picked</span>
+            </div>
+            {cmp ? (
+              <>
+                <div className="table-wrap">
+                  <table>
+                    <thead><tr><th scope="col">Measure</th>{Object.keys(cmp[0].values).map((k) => <th scope="col" key={k}>{k}</th>)}</tr></thead>
+                    <tbody>{cmp.map((r) => <tr key={r.key} className={r.differs ? "differs" : ""}><th scope="row" style={{ background: "transparent", textTransform: "none", letterSpacing: 0, fontSize: 15, color: "inherit" }}>{r.label}</th>{Object.values(r.values).map((v, i) => <td key={i}>{v}</td>)}</tr>)}</tbody>
+                  </table>
+                </div>
+                <p className="small">Rows with a purple edge differ between paths. Cost is not estimated because no sourced tuition rate was supplied. No path is ranked: bring this to your advisor.</p>
+              </>
+            ) : (
+              <div className="linkcard"><span>Pick up to three paths below and they line up here against your current plan, row by row.</span><span className="small">Current plan: finish {ov.baseline.plan.earliestGraduation.label ?? "not in window"}</span></div>
+            )}
+          </section>
           <section className="stack" aria-labelledby="m-h"><h2 id="m-h">Add a minor</h2><div className="grid grid-2">{ov.minors.map((a, i) => <AltCard key={i} a={a} k={`minor-${a.plan.generatedFor.minors[0]}`} pick={{ kind: "add_minor", minorId: a.plan.generatedFor.minors[0] }} />)}</div></section>
           <section className="stack" aria-labelledby="c-h">
             <h2 id="c-h">Prioritize a career interest</h2>
@@ -95,8 +118,18 @@ export default function WhatIf() {
             </Card>
             {careerAlt && <AltCard a={careerAlt} k="career" pick={{ kind: "career_focus", careerTags: tag }} />}
           </section>
-          <section className="stack" aria-labelledby="s-h"><h2 id="s-h">Change a major</h2><p className="small">Each card replaces your last major with another Neeley major.</p><div className="grid grid-2">{ov.majorSwitches.map((a, i) => <AltCard key={i} a={a} k={`major-${a.plan.generatedFor.majors.join("+")}`} pick={{ kind: "change_major", toMajorId: a.plan.generatedFor.majors[a.plan.generatedFor.majors.length - 1] }} />)}</div></section>
-          <section className="stack" aria-labelledby="su-h"><h2 id="su-h">Use summer terms</h2><div className="grid grid-2"><AltCard a={ov.summer} k="summer" pick={{ kind: "summer" }} /></div></section>
+          <section className="stack" aria-labelledby="s-h">
+            <h2 id="s-h">Change a major</h2>
+            <Collapse title="Each option replaces your last major with another Neeley major" hint={`${ov.majorSwitches.length} options`}>
+              <div className="grid grid-2">{ov.majorSwitches.map((a, i) => <AltCard key={i} a={a} k={`major-${a.plan.generatedFor.majors.join("+")}`} pick={{ kind: "change_major", toMajorId: a.plan.generatedFor.majors[a.plan.generatedFor.majors.length - 1] }} />)}</div>
+            </Collapse>
+          </section>
+          <section className="stack" aria-labelledby="su-h">
+            <h2 id="su-h">Use summer terms</h2>
+            <Collapse title="See how summer courses change your finish date and term loads" hint="1 path">
+              <div className="grid grid-2"><AltCard a={ov.summer} k="summer" pick={{ kind: "summer" }} /></div>
+            </Collapse>
+          </section>
         </>
       )}
     </div>
