@@ -14,9 +14,6 @@ const TABS = [
   { href: "/student/whatif", label: "What if" },
   { href: "/student/careers", label: "Careers" },
   { href: "/student/goals", label: "My goals" },
-  { href: "/student/corrections", label: "Corrections" },
-  { href: "/student/map", label: "Requirements map" },
-  { href: "/student/samples", label: "Sample students" },
   { href: "/student/requests", label: "My requests" },
   { href: "/student/chat", label: "Ask the AI" },
 ];

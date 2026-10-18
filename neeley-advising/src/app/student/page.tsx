@@ -1,4 +1,5 @@
 "use client";
+import { Bullets } from "@/components/Bullets";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { useStudent } from "@/components/StudentContext";
@@ -154,7 +155,7 @@ export default function StudentHome() {
       <Step n={3} tone="tint" title="What to take next" chip={<button className="btn btn-sm" onClick={getRecs} disabled={recBusy}>{recBusy ? "Working…" : recs ? "Refresh recommendations" : "Get my recommendations"} <Icon name="arrow" size={14} /></button>}>
         {!recs && <p className="small">Claude reads the planning engine&apos;s results and explains what to take next and why. Required courses stay separate from optional ideas.</p>}
         {recNote && <p className="small" role="status">{recNote}</p>}
-        {recs && <p>{recs.summary} <span className="badge b-neutral">{recs.generatedBy === "claude" ? "Explained by Claude" : "Engine facts only"}</span></p>}
+        {recs && <><Bullets text={recs.summary} /><p><span className="badge b-neutral">{recs.generatedBy === "claude" ? "Explained by Claude" : "Engine facts only"}</span></p></>}
         <div className="three">
           <div className="mini">
             <h3><Icon name="book" size={16} />Required next term</h3>

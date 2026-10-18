@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Card } from "@/components/Bits";
 import { ApiError, postJson } from "@/lib/client";
+import { Icon } from "@/components/ui";
 
 interface Fit { results: { programId: string; name: string; score: number; reasons: string[]; lowConfidence: boolean }[]; confidence: number; needMore: boolean; note: string; skipped: string[] }
 type Answers = { interests: string[]; strengths: string[]; quant?: number; communication?: number; people?: number; creative?: number; leadership?: number; careers: string[]; values: string[]; worries: string[] };
@@ -15,14 +16,21 @@ const OPT = {
   worries: [["cost", "Cost"], ["difficulty", "How hard it will be"], ["fit", "Finding the right fit"], ["jobs", "Finding a job"], ["distance", "Distance from home"]],
 } as const;
 
-const STEPS = ["about", "interests", "strengths", "style", "careers", "values", "know"] as const;
+const ICON: Record<string, string> = {
+  technology: "laptop", people: "users", money: "dollar", creativity: "palette", building: "tools", helping: "heart", business: "briefcase", data: "database",
+  math: "calc", writing: "pen", speaking: "mic", science: "flask", art: "palette", leading: "crown",
+  banking: "dollar", consulting: "briefcase", startups: "rocket", brand: "megaphone", operations: "truck", sales: "trend", "real-estate": "home",
+  income: "dollar", stability: "shield", impact: "heart", flexibility: "clock", growth: "seedling",
+  cost: "dollar", difficulty: "puzzle", fit: "target", jobs: "briefcase", distance: "pin",
+};
+
+const STEPS = ["about", "interests", "strengths", "style", "careers", "values"] as const;
 
 export default function Survey() {
   const [step, setStep] = useState(0);
   const [a, setA] = useState<Answers>({ interests: [], strengths: [], careers: [], values: [], worries: [] });
   const [knows, setKnows] = useState<"courses" | "little" | "nothing" | undefined>();
-  const [consent, setConsent] = useState(false);
-  const [out, setOut] = useState<{ fit: Fit; route: string } | null>(null);
+    const [out, setOut] = useState<{ fit: Fit; route: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -32,8 +40,10 @@ export default function Survey() {
   async function finish() {
     setBusy(true); setErr(null);
     try {
-      const answers = { ...a, interests: a.interests, strengths: a.strengths };
-      setOut(await postJson("/api/survey", { answers, knows, consentToSave: consent }));
+      // The slider shows 10 stops; the fit model expects 1 to 5, so 10 maps to 5 and 2 to 1.
+      const to5 = (v?: number) => (v === undefined ? undefined : Math.min(5, Math.max(1, v / 2)));
+      const answers = { ...a, interests: a.interests, strengths: a.strengths, quant: to5(a.quant), communication: to5(a.communication), people: to5(a.people), creative: to5(a.creative), leadership: to5(a.leadership) };
+      setOut(await postJson("/api/survey", { answers, knows }));
     } catch (e) { setErr(e instanceof ApiError ? e.message : "Something went wrong."); } finally { setBusy(false); }
   }
 
@@ -67,15 +77,15 @@ export default function Survey() {
 
   const Opts = ({ k, max }: { k: "interests" | "strengths" | "careers" | "values" | "worries"; max: number }) => (
     <>
-      <div className="row" role="group" aria-label="Options">{OPT[k].map(([id, label]) => <button key={id} className="chip" aria-pressed={a[k].includes(id)} onClick={() => multi(k, id, max)}>{label}</button>)}</div>
+      <div className="row" role="group" aria-label="Options">{OPT[k].map(([id, label]) => <button key={id} className="chip" aria-pressed={a[k].includes(id)} onClick={() => multi(k, id, max)}><span aria-hidden style={{ display: "inline-flex", marginRight: 6, verticalAlign: "-3px" }}><Icon name={ICON[id] ?? "star"} size={16} /></span>{label}</button>)}</div>
       <p className="small" aria-live="polite">{a[k].length} of {max} picked</p>
     </>
   );
   const Slider = ({ k, left, right }: { k: "quant" | "communication" | "people" | "creative" | "leadership"; left: string; right: string }) => (
     <div className="field">
       <div className="row-between"><span className="small">{left}</span><span className="small">{right}</span></div>
-      <input type="range" min={1} max={5} step={1} value={a[k] ?? 3} onChange={(e) => setA((s) => ({ ...s, [k]: Number(e.target.value) }))} onFocus={() => a[k] === undefined && setA((s) => ({ ...s, [k]: 3 }))} aria-label={`${left} to ${right}`} aria-valuetext={a[k] === undefined ? "not answered" : String(a[k])} />
-      <div className="small">{a[k] === undefined ? "Not answered (skipped)" : `You chose ${a[k]} of 5`} {a[k] !== undefined && <button className="btn btn-ghost btn-sm" onClick={() => setA((s) => ({ ...s, [k]: undefined }))}>Skip this</button>}</div>
+      <input type="range" min={1} max={10} step={1} value={a[k] ?? 6} onChange={(e) => setA((s) => ({ ...s, [k]: Number(e.target.value) }))} onFocus={() => a[k] === undefined && setA((s) => ({ ...s, [k]: 6 }))} aria-label={`${left} to ${right}`} aria-valuetext={a[k] === undefined ? "not answered" : String(a[k])} />
+      <div className="small">{a[k] === undefined ? "Not answered (skipped)" : `You chose ${a[k]} of 10`} {a[k] !== undefined && <button className="btn btn-ghost btn-sm" onClick={() => setA((s) => ({ ...s, [k]: undefined }))}>Skip this</button>}</div>
     </div>
   );
 
@@ -92,8 +102,8 @@ export default function Survey() {
         {name === "style" && <div className="stack"><h2>How do you like to work?</h2><Slider k="quant" left="Math and data make me nervous" right="I like math and data" /><Slider k="communication" left="I prefer to stay quiet" right="I like writing and presenting" /><Slider k="people" left="Analysis and ideas" right="People" /><Slider k="creative" left="Structured and predictable" right="Creative and open" /><Slider k="leadership" left="Happy to follow" right="Drawn to lead" /></div>}
         {name === "careers" && <div className="stack"><h2>What work could you picture? (up to 3)</h2><Opts k="careers" max={3} /><p className="small">&quot;No idea yet&quot; is fine. Skip it.</p></div>}
         {name === "values" && <div className="stack"><h2>What matters most? (up to 2)</h2><Opts k="values" max={2} /><h3 style={{ fontSize: 18, marginTop: 12 }}>Any worries?</h3><Opts k="worries" max={5} /></div>}
-        {name === "know" && <div className="stack"><h2>Almost done</h2><label className="check"><input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} /> <span>Save my answers so I can come back, and let Neeley contact me about next steps. (Optional. Nothing is saved unless you check this.)</span></label>{err && <p role="alert">{err}</p>}</div>}
       </Card>
+      {err && <p role="alert">{err}</p>}
       <div className="row-between">
         <button className="btn btn-ghost" disabled={step === 0} onClick={() => setStep((s) => s - 1)}>Back</button>
         <div className="row">{step < STEPS.length - 1 ? <><button className="btn btn-ghost" onClick={() => setStep((s) => s + 1)}>Skip</button><button className="btn" onClick={() => setStep((s) => s + 1)}>Next</button></> : <button className="btn" onClick={finish} disabled={busy}>{busy ? "Working…" : "Show my results"}</button>}</div>

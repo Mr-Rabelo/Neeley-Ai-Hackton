@@ -254,20 +254,7 @@ export function PlanView({ plan, record }: { plan: PlanResult; record?: StudentR
         )}
       </section>
 
-      <div className="grid grid-2">
-        <Card title="Verification checklist">
-          <p className="small" style={{ marginBottom: 10 }}>Bring this to your advisor. These are things the plan could not confirm.</p>
-          <ul className="stack" style={{ gap: 10, listStyle: "none", padding: 0, margin: 0 }}>
-            {plan.unverified.map((u) => <li key={u}><label className="check"><input type="checkbox" /> <span>{u}</span></label></li>)}
-          </ul>
-        </Card>
-        <Card title="Questions for your advisor">
-          <ol className="stack" style={{ gap: 10, paddingLeft: 20, margin: 0 }}>
-            {plan.advisorQuestions.map((q) => <li key={q}>{q}</li>)}
-          </ol>
-          <div style={{ marginTop: 14 }}><Link className="btn btn-sm" href="/next?review=1">Ask an advisor to review this plan</Link></div>
-        </Card>
-      </div>
+      <div><Link className="btn btn-sm" href="/next?review=1">Ask an advisor to review this plan</Link></div>
 
       <Collapse title="Requirements: what is done and what is left" hint={`${groupsDone} of ${plan.requirements.length} groups complete`}>
         <div className="stack" style={{ gap: 20 }}>{plan.requirements.map((r) => <RequirementRow key={r.id} r={r} chosen={chosenFor(plan, r)} />)}</div>

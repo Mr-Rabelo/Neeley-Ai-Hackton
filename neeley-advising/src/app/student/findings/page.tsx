@@ -68,21 +68,23 @@ export default function FindingsPage() {
               <button className="btn btn-ghost btn-sm" onClick={() => window.print()}>Print</button>
             </div>
           </div>
-          <div className="table-wrap">
-            <table className="report">
-              <thead><tr><th scope="col">Finding</th><th scope="col">Evidence</th><th scope="col">Student impact</th><th scope="col">Affected students</th><th scope="col">Confidence</th></tr></thead>
-              <tbody>
-                {shown.map((r) => (
-                  <tr key={r.id}>
-                    <td><span className={`badge ${SEV_CLS[r.severity]}`}>{SEV_LABEL[r.severity]}</span>{r.needsAdvisor && <span className="badge b-bad" style={{ marginLeft: 6 }}>Advisor</span>}<p style={{ marginTop: 6 }}>{r.finding}</p>{r.fix && <p className="small" style={{ marginTop: 4 }}>Fix: {r.fix}</p>}<div className="no-print" style={{ marginTop: 8 }}><ChallengeButton id={r.id} message={r.finding} /></div></td>
-                    <td><ul className="plain">{r.evidence.map((e) => <li key={e}>{e}</li>)}</ul></td>
-                    <td><p>{r.impact}</p>{r.assumptions.length > 0 && <details><summary>Assumptions ({r.assumptions.length})</summary><ul className="plain small">{r.assumptions.map((a) => <li key={a}>{a}</li>)}</ul></details>}</td>
-                    <td>{r.affected}</td>
-                    <td>{r.confidence}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="stack" style={{ gap: 10 }}>
+            {shown.map((r) => (
+              <details key={r.id} className="collapse">
+                <summary>
+                  <span className="collapse-title"><span className={`badge ${SEV_CLS[r.severity]}`}>{SEV_LABEL[r.severity]}</span>{r.needsAdvisor && <span className="badge b-bad" style={{ marginLeft: 6 }}>Advisor</span>} <span style={{ marginLeft: 8 }}>{r.finding}</span></span>
+                  <span className="collapse-chev" aria-hidden><Icon name="chevron" size={16} /></span>
+                </summary>
+                <div className="collapse-body stack" style={{ gap: 12 }}>
+                  {r.fix && <p><b>Fix:</b> {r.fix}</p>}
+                  <div><b>Evidence</b><ul className="plain">{r.evidence.map((e) => <li key={e}>{e}</li>)}</ul></div>
+                  <div><b>Student impact</b><p>{r.impact}</p>{r.assumptions.length > 0 && <ul className="plain small">{r.assumptions.map((a) => <li key={a}>{a}</li>)}</ul>}</div>
+                  <p><b>Affected students:</b> {r.affected}</p>
+                  <p><b>Confidence:</b> {r.confidence}</p>
+                  <div className="no-print"><ChallengeButton id={r.id} message={r.finding} /></div>
+                </div>
+              </details>
+            ))}
           </div>
           <Card title="How to read this"><p className="small">Evidence names the source record (for example S1 is the TCU 2026-27 catalog) and the courses involved. &quot;Engine calculation&quot; means the number comes from the planning engine, not from a document. Confidence is High when a rule is stated in the catalog, Medium when it rests on a usual pattern, and Low when it rests on an assumption.</p></Card>
         </>

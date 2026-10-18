@@ -1,4 +1,5 @@
 "use client";
+import { Bullets } from "./Bullets";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { DifficultyView, MarketView } from "@/lib/market";
@@ -80,8 +81,8 @@ export function MarketPanel({ data, aiIds, interests, compact }: { data: MarketD
         <p className="small" style={{ marginTop: 8 }}>Inputs: {d.inputs.requiredCourses} courses counted, {d.inputs.upperLevelCourses} upper-level, longest prerequisite chain {d.inputs.longestPrerequisiteChain} courses, {Math.round(d.inputs.quantitativeShare * 100)}% quantitative, {d.inputs.writingEmphasisHours} writing-emphasis hours.</p>
         <details style={{ marginTop: 8 }}><summary>How we calculated this</summary><p className="small" style={{ marginTop: 6 }}>{d.method}</p></details>
       </Card>
-      <Card title="AI analysis">
-        {analysis ? <div style={{ whiteSpace: "pre-wrap" }}>{analysis}</div> : <p className="small">Claude can write a short plain-language read of this data, using only the numbers above.</p>}
+      <Card title="AI analysis" className="analysis-card">
+        {analysis ? <><p className="eyebrow" style={{ marginBottom: 8 }}>Key takeaways</p><Bullets text={analysis} /></> : <p className="small">Claude can write a short plain-language read of this data, using only the numbers above.</p>}
         {note && <p className="small" role="alert" style={{ marginTop: 8 }}>{note}</p>}
         <div style={{ marginTop: 12 }}><button className="btn btn-sm" onClick={run} disabled={busy}>{busy ? "Writing…" : analysis ? "Write it again" : "Write an AI analysis"}</button></div>
       </Card>

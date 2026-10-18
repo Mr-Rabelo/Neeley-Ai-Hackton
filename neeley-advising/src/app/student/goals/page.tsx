@@ -111,7 +111,6 @@ export default function GoalsPage() {
               {res.alternative.plan.terms.map((t) => <li key={t.termId}><b>{t.label}</b> · {t.credits} credits<br /><span className="small">{t.courses.map((c) => (c.placeholder ? c.title : `${pretty(c.code)} ${c.title}`)).join(" · ")}</span></li>)}
             </ol>
           </Card>
-          <Card title="Not verified"><ul className="plain">{[...res.alternative.unverified, ...res.alternative.advisorDecisions].map((g) => <li key={g}>{g}</li>)}</ul></Card>
         </div>
       )}
     </div>

@@ -378,3 +378,8 @@ table.report td:first-child { min-width: 260px; }
 }
 
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.bullets { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.msg.assistant { white-space: normal; }
+.analysis-card { border-left: 4px solid var(--solid); }
+.analysis-card .bullets { gap: 10px; }
+.analysis-card li::marker { color: var(--solid); }

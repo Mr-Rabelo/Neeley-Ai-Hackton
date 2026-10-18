@@ -1,4 +1,5 @@
 "use client";
+import { Bullets } from "./Bullets";
 import { useEffect, useRef, useState } from "react";
 import type { StudentRecord } from "@/lib/types";
 
@@ -92,7 +93,7 @@ export function Chat({ mode, record, profile, intro, starters, initial }: { mode
       <div className="msgs" ref={box} aria-live="polite" aria-label="Conversation">
         {msgs.map((m, i) => (
           <div key={i} className={`msg ${m.role}`}>
-            {m.content || (busy && i === msgs.length - 1 ? <span><span className="spin" aria-hidden /> {status}…</span> : "")}
+            {m.content ? (m.role === "assistant" ? <Bullets text={m.content} /> : m.content) : (busy && i === msgs.length - 1 ? <span><span className="spin" aria-hidden /> {status}…</span> : "")}
             {m.role === "assistant" && m.verified === false && <div className="small" style={{ marginTop: 8 }}>This answer could not be fully checked against the planning engine.</div>}
             {m.options?.map((o, k) => (
               <div key={k} className="stack" style={{ marginTop: 10, gap: 8 }}>
