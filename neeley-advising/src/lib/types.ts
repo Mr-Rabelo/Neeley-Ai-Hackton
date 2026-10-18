@@ -191,6 +191,8 @@ export interface RequirementStatus {
   satisfiedBy: string[]; // course codes
   remainingCourses: string[]; // for required lists
   chooseFrom?: string[];
+  /** Titles for the codes in chooseFrom. Display only; added so the UI can list alternatives by name. */
+  chooseFromTitles?: Record<string, string>;
   sourceId: string;
   page?: number;
   note?: string;

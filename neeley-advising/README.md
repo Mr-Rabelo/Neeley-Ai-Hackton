@@ -104,6 +104,17 @@ Twilio is retained only for the existing "text me the sign-in link" action. It r
 ### Deploy (Vercel)
 The project is already connected to Vercel. Add only the new Vapi variables to its existing Environment Variables, keep the current Supabase and other settings, then redeploy. The `data/` folder is traced into the serverless functions.
 
+## Sample weekly schedule (assumed data)
+TCU's real section schedule was not supplied, so the plan page can show a **generated sample schedule** (`src/lib/sections.ts`, API `POST /api/schedule`). It exists to show how class times, overlaps and full sections would look; it is always labeled "Sample (assumed)" and is never presented as TCU data.
+
+- **Deterministic:** the same course and term always produce the same sections (fixed seed `neeley-sample-schedule-v1`).
+- **Assumed rules:** 3+ credit courses meet MWF (50 minutes) or TR (75 minutes) in standard blocks; 1 to 1.5 credit courses meet once a week; half of courses have one section, the rest two or three; popular mid-morning blocks are more likely; capacities 20 to 45 with some full sections and waitlists.
+- **Read-only:** it reads the finished plan and never moves a course or changes the earliest finish. A conflict-free combination is searched for first; if none exists, the fewest overlaps are shown with a message.
+- **Replace it with real data:** swap `sectionsFor()` for a lookup into real section data (for example a registrar or Stellic feed) and the panel, conflict check and tests keep working.
+
+## Findings report
+`/student/findings` restates every engine finding as a table with **Finding, Evidence, Student impact (with assumptions), Affected students and Confidence**, plus CSV download and print. Impact text is rule-based (`src/lib/report.ts`), uses numbers from the plan, and never estimates costs.
+
 ## Data pipeline (`scripts/`)
 - `build_catalog.py`: parses the 2,791-page catalog PDF into `data/catalog/courses.json` (about 3,900 courses with descriptions, prerequisites and typical offerings). Catalog pages list each page's course headers first and the descriptions after, so pairing is done **per page** to avoid drift; four mismatched pages (graduate courses) are logged.
 - `data/catalog/neeley.json`: majors, minors, Core Curriculum, lower-division and business core, policies, each with a source and catalog page. Hand-structured from the catalog.

@@ -5,6 +5,7 @@ import type { PlanResult } from "@/lib/types";
 import { useStudent } from "@/components/StudentContext";
 import { Card, NeedStudent } from "@/components/Bits";
 import { RequirementRow } from "@/components/PlanView";
+import { chosenFor } from "@/lib/report";
 import { Icon, Stat } from "@/components/ui";
 import { getJson, postJson } from "@/lib/client";
 
@@ -62,7 +63,7 @@ export default function CoursesPage() {
                   <button key={k} role="tab" aria-selected={show === k} className="tab" onClick={() => setShow(k)}>{label}</button>
                 ))}
               </div>
-              <Card><div className="stack" style={{ gap: 20 }}>{shown.map((r) => <RequirementRow key={r.id} r={r} />)}{!shown.length && <p className="small">Nothing in this group.</p>}</div></Card>
+              <Card><div className="stack" style={{ gap: 20 }}>{shown.map((r) => <RequirementRow key={r.id} r={r} chosen={chosenFor(plan, r)} />)}{!shown.length && <p className="small">Nothing in this group.</p>}</div></Card>
             </section>
             {slips.length > 0 && (
               <section className="stack" aria-labelledby="slip-h">

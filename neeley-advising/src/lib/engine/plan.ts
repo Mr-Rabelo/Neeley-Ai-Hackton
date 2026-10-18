@@ -184,6 +184,7 @@ export function collectNeeds(record: StudentRecord, opts: PlanOptions): Needs {
       void taken;
       for (const c of picks) addItem(items, c, req.label, g.hours >= 6 ? "Chosen to fit your interests and the catalog's offering pattern" : "Satisfies a choice requirement");
       req.chooseFrom = g.from.map(normCode);
+      req.chooseFromTitles = Object.fromEntries(g.from.map((c) => [normCode(c), titleOf(c)]));
       if (g.followUp && picks.includes("FINA40623") && !items.has("BUSI30383")) {
         addItem(items, "ACCT30450", req.label, "Needed because International Finance is taken instead of Global Business (catalog note)");
       }

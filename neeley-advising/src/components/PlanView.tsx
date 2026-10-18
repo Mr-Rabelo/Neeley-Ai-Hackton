@@ -5,6 +5,8 @@ import type { PlanResult, RequirementStatus, StudentRecord } from "@/lib/types";
 import { buildYearGroups, defaultYearIndex, findingSummary, type CompletedTerm, type YearGroup } from "@/lib/plan-view";
 import { AvailText, Card, ConfBadge, FindingCard, Src, SourceList } from "./Bits";
 import { Collapse, Icon, Stat } from "./ui";
+import { SchedulePanel } from "./SchedulePanel";
+import { chosenFor } from "@/lib/report";
 
 const pretty = (c: string) => c.replace(/^([A-Z]+)(\d+)$/, "$1 $2");
 const hoursLabel = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
@@ -13,7 +15,7 @@ const termOrder = (termId: string) => {
   return Number(y) * 3 + ({ Spring: 0, Summer: 1, Fall: 2 } as Record<string, number>)[n];
 };
 
-export function RequirementRow({ r }: { r: RequirementStatus }) {
+export function RequirementRow({ r, chosen }: { r: RequirementStatus; chosen?: string[] }) {
   const total = Math.max(r.hoursNeeded, 0.0001);
   const done = Math.min(100, (r.hoursDone / total) * 100);
   const prog = Math.min(100 - done, (r.hoursInProgress / total) * 100);
@@ -30,6 +32,25 @@ export function RequirementRow({ r }: { r: RequirementStatus }) {
         <div className="small">Still needed: {r.remainingCourses.map((c, i) => <span key={c}>{i > 0 && ", "}<Link href={`/course/${c}`}>{pretty(c)}</Link></span>)}</div>
       )}
       {r.note && <div className="small">{r.note} <Src id={r.sourceId} page={r.page} /></div>}
+      {r.chooseFrom && r.chooseFrom.length > 1 && r.status !== "complete" && (
+        <details>
+          <summary>Choose from {r.chooseFrom.length} options</summary>
+          <ul className="alts">
+            {r.chooseFrom.map((c) => {
+              const picked = chosen?.includes(c);
+              const has = r.satisfiedBy.includes(c);
+              return (
+                <li key={c}>
+                  <Link href={`/course/${c}`}>{pretty(c)}</Link> {r.chooseFromTitles?.[c] ?? ""}
+                  {has && <span className="badge b-ok" style={{ marginLeft: 6 }}>Counts now</span>}
+                  {!has && picked && <span className="badge b-info" style={{ marginLeft: 6 }}>In your plan</span>}
+                </li>
+              );
+            })}
+          </ul>
+          <p className="small">Any option can satisfy this group; the plan picks the ones that fit your interests and the catalog&apos;s offering pattern. Substitutions need an advisor.</p>
+        </details>
+      )}
     </div>
   );
 }
@@ -127,6 +148,13 @@ export function PlanView({ plan, record }: { plan: PlanResult; record?: StudentR
                     <span className="meta">{hoursLabel(c.credits)} hrs · {c.satisfies[0] ?? ""}</span>
                     {!c.placeholder && <span className="meta"><AvailText a={c.availability} /></span>}
                     {c.placeholder && <span className="meta">Placeholder: any approved course. No specific course is recommended.</span>}
+                    {!c.placeholder && (
+                      <details className="why">
+                        <summary>Why this course</summary>
+                        <p>{c.reason}</p>
+                        <p className="small">Counts toward: {c.satisfies.join("; ") || "total hours"}. Offering pattern from the catalog <Src id={c.availability.sourceId} />.</p>
+                      </details>
+                    )}
                   </div>
                 ))}
               </div>
@@ -194,6 +222,8 @@ export function PlanView({ plan, record }: { plan: PlanResult; record?: StudentR
         )}
       </section>
 
+      <SchedulePanel plan={plan} />
+
       <section aria-labelledby="find-h" className="stack">
         <div className="row-between">
           <h2 id="find-h">What the engine found</h2>
@@ -240,7 +270,7 @@ export function PlanView({ plan, record }: { plan: PlanResult; record?: StudentR
       </div>
 
       <Collapse title="Requirements: what is done and what is left" hint={`${groupsDone} of ${plan.requirements.length} groups complete`}>
-        <div className="stack" style={{ gap: 20 }}>{plan.requirements.map((r) => <RequirementRow key={r.id} r={r} />)}</div>
+        <div className="stack" style={{ gap: 20 }}>{plan.requirements.map((r) => <RequirementRow key={r.id} r={r} chosen={chosenFor(plan, r)} />)}</div>
       </Collapse>
 
       <Collapse title="Sources" hint={`${plan.sources.length} records`}>

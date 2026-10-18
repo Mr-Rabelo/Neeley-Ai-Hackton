@@ -1,5 +1,5 @@
 import type { Program, ReqGroup, RequirementStatus, StudentRecord, TranscriptCourse } from "../types";
-import { creditsFor, getCourse, getProgram, isAdvanced, neeley, normCode, subjectOf } from "../catalog";
+import { creditsFor, getCourse, getProgram, isAdvanced, neeley, normCode, subjectOf, titleOf } from "../catalog";
 import { meetsGrade } from "../transcript";
 
 export type CourseState = "done" | "in_progress";
@@ -172,6 +172,7 @@ export function programRequirements(p: Program, st: StudentState, used: Set<stri
       satisfiedBy: fill.chosen,
       remainingCourses: [],
       chooseFrom: g.from.map(normCode),
+      chooseFromTitles: Object.fromEntries(g.from.map((c) => [normCode(c), titleOf(c)])),
       sourceId: p.sourceId,
       page: p.page,
       note: [g.note, g.advisorNote, g.followUp].filter(Boolean).join(" "),

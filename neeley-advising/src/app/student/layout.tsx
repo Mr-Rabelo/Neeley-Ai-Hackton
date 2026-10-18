@@ -8,6 +8,7 @@ import { Icon } from "@/components/ui";
 const TABS = [
   { href: "/student", label: "Overview" },
   { href: "/student/plan", label: "My plan" },
+  { href: "/student/findings", label: "Findings" },
   { href: "/student/courses", label: "Courses" },
   { href: "/student/whatif", label: "What if" },
   { href: "/student/careers", label: "Careers" },
