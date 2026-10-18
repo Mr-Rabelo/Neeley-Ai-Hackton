@@ -1,45 +1,24 @@
-# [Project name]
+# Neeley Advising
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+The Next.js application is imported in `neeley-advising/`, on branch `feat/ai-advising-app`. Its root `AGENTS.md` contains shared guidance for coding agents.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- The `Neeley Advising` workflow runs the app with `cd neeley-advising && npm run dev -- --hostname 0.0.0.0 --port 5000`.
+- Tests: `cd neeley-advising && npm test`
+- Type check: `cd neeley-advising && npm run typecheck`
+- Production build: `cd neeley-advising && npm run build`
+- Supabase and Vercel are already configured by the user. Preserve their existing configuration; do not recreate services or replace settings. Never expose or commit secret values.
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Next.js 16, React 19, TypeScript
+- Supabase for configured persistence
+- Claude-powered features with deterministic planning logic
+- Twilio voice integration
 
-## Where things live
+## Source of truth
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
-
-## Architecture decisions
-
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
-
-## Product
-
-_Describe the high-level user-facing capabilities of this app once they exist._
-
-## User preferences
-
-_Populate as you build — explicit user instructions worth remembering across sessions._
-
-## Gotchas
-
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- `neeley-advising/` is the imported application repository and has its own Git history and `feat/ai-advising-app` branch.
+- Follow `neeley-advising/AGENTS.md` for app-specific architecture, safety limits, tests, and collaboration.
+- The planning engine is authoritative for requirements, credits, eligibility, and semester plans; AI may explain results but must not calculate or override them.

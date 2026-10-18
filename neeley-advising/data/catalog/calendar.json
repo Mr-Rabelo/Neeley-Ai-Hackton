@@ -1,0 +1,35 @@
+{
+  "_note": "Academic Calendar from the TCU Undergraduate 2026-2027 Catalog, pages 15-16 (source S1). Registration-opening and add/drop deadlines are NOT in the supplied catalog pages, so they are not listed here.",
+  "sourceId": "S1",
+  "terms": {
+    "2026-Fall": [
+      { "date": "2026-08-24", "label": "First day of classes", "page": 15 },
+      { "date": "2026-09-07", "label": "Labor Day holiday", "page": 15 },
+      { "date": "2026-10-07", "label": "Fall break begins (classes recess at 10 p.m.)", "page": 15 },
+      { "date": "2026-10-12", "label": "Fall break ends (classes resume 8 a.m.)", "page": 15 },
+      { "date": "2026-11-20", "label": "Thanksgiving break begins", "page": 15 },
+      { "date": "2026-11-30", "label": "Classes resume", "page": 15 },
+      { "date": "2026-12-09", "label": "Last day of class", "page": 15 },
+      { "date": "2026-12-14", "label": "Final exams begin (Dec. 14-18)", "page": 15 },
+      { "date": "2026-12-18", "label": "Commencement", "page": 15 }
+    ],
+    "2027-Spring": [
+      { "date": "2027-01-19", "label": "First day of classes", "page": 15 },
+      { "date": "2027-03-12", "label": "Spring break begins (classes recess 10 p.m.)", "page": 15 },
+      { "date": "2027-03-22", "label": "Classes resume after spring break", "page": 15 },
+      { "date": "2027-03-26", "label": "Good Friday holiday", "page": 15 },
+      { "date": "2027-05-05", "label": "Last day of class", "page": 15 },
+      { "date": "2027-05-10", "label": "Final exams begin (May 10-14)", "page": 15 },
+      { "date": "2027-05-14", "label": "Commencement weekend begins (May 14-16)", "page": 15 }
+    ],
+    "2027-Summer": [
+      { "date": "2027-05-17", "label": "May, 8-week and 13-week sessions begin", "page": 16 },
+      { "date": "2027-06-04", "label": "May session ends", "page": 16 },
+      { "date": "2027-06-07", "label": "June session begins", "page": 16 },
+      { "date": "2027-07-09", "label": "June and 8-week sessions end", "page": 16 },
+      { "date": "2027-07-12", "label": "July session begins", "page": 16 },
+      { "date": "2027-08-06", "label": "July session ends", "page": 16 },
+      { "date": "2027-08-15", "label": "13-week session ends", "page": 16 }
+    ]
+  }
+}

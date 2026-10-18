@@ -1,0 +1,908 @@
+{
+  "_note": "Hand-structured from the TCU Undergraduate 2026-2027 Catalog (S1) and the Neeley School Department pages (S2). Page numbers are PDF pages of the catalog. Anything not stated in those documents is NOT in this file; the engine treats it as unverified.",
+  "sources": [
+    {
+      "id": "S1",
+      "title": "TCU Undergraduate 2026-2027 Catalog",
+      "owner": "Texas Christian University",
+      "catalogYear": "2026-2027",
+      "type": "catalog",
+      "asOf": "2026-10-17",
+      "document": "Undergrad Catalog.pdf"
+    },
+    {
+      "id": "S2",
+      "title": "Neeley School of Business Department pages (Catalog excerpt)",
+      "owner": "TCU Neeley School of Business",
+      "catalogYear": "2026-2027",
+      "type": "policy",
+      "asOf": "2026-10-17",
+      "document": "Neeley School of Business Department_.pdf"
+    },
+    {
+      "id": "S3",
+      "title": "Sample student transcript (demo data)",
+      "owner": "Sample data supplied by the project team",
+      "catalogYear": "n/a",
+      "type": "student_record",
+      "asOf": "2026-10-17",
+      "document": "sample_transcript.pdf"
+    },
+    {
+      "id": "S4",
+      "title": "Graduation Blueprint case brief",
+      "owner": "Neeley AI Forward competition",
+      "catalogYear": "n/a",
+      "type": "case",
+      "asOf": "2026-10-17",
+      "document": "05 Graduation_Blueprint_Advising_Case.pdf"
+    },
+    {
+      "id": "S5",
+      "title": "BLS Occupational Outlook Handbook, 2025-35 employment projections",
+      "owner": "U.S. Bureau of Labor Statistics",
+      "catalogYear": "n/a",
+      "type": "external_stat",
+      "asOf": "2026-10-17",
+      "document": "Pages last modified 2026-08-27",
+      "url": "https://www.bls.gov/ooh/"
+    }
+  ],
+  "policies": [
+    {
+      "id": "total-hours",
+      "text": "At least 120 semester hours are required for a bachelor's degree.",
+      "value": 120,
+      "sourceId": "S1",
+      "page": 204
+    },
+    {
+      "id": "advanced-hours",
+      "text": "At least 36 of the total hours must be advanced courses numbered 30000 or above, completed at TCU.",
+      "value": 36,
+      "sourceId": "S1",
+      "page": 204
+    },
+    {
+      "id": "residence",
+      "text": "At least 45 semester hours must be completed in residence at TCU, and all courses in the final semester must be taken at TCU.",
+      "value": 45,
+      "sourceId": "S1",
+      "page": 204
+    },
+    {
+      "id": "bba-gpa",
+      "text": "A TCU cumulative GPA of at least 2.50 and a major GPA of at least 2.5 are required to graduate with a BBA.",
+      "value": 2.5,
+      "sourceId": "S1",
+      "page": 586
+    },
+    {
+      "id": "advance-gpa",
+      "text": "To advance into a Neeley major: TCU cumulative GPA of 3.00 or higher and lower-division GPA of 2.75 or higher; all lower-division requirements completed or enrolled.",
+      "cumulative": 3.0,
+      "lowerDivision": 2.75,
+      "sourceId": "S2",
+      "page": 4
+    },
+    {
+      "id": "first-year",
+      "text": "Students entering as business must complete at least 24 credit hours in the first year at TCU with a 2.75 GPA, and demonstrate Excel and PowerPoint competency (Microsoft Specialist certification, basic level).",
+      "hours": 24,
+      "gpa": 2.75,
+      "sourceId": "S2",
+      "page": 4
+    },
+    {
+      "id": "internal-transfer",
+      "text": "Internal transfers into business are reviewed once a year; a GPA below 3.25 is unlikely to be admitted. Admission is competitive and not guaranteed.",
+      "gpa": 3.25,
+      "sourceId": "S1",
+      "page": 586
+    },
+    {
+      "id": "pnc",
+      "text": "Business students may take up to 6 semester hours pass/no-credit. No Neeley course and no lower-division business core course may be taken P/NC.",
+      "maxHours": 6,
+      "sourceId": "S2",
+      "page": 5
+    },
+    {
+      "id": "transfer-limit",
+      "text": "Once enrolled at TCU, no more than 4 courses (16 hours) may transfer from other institutions, with prior written approval from the Neeley Academic Advising Center. Lower-division sequence, upper-division core and major courses must be taken at TCU.",
+      "maxHours": 16,
+      "sourceId": "S2",
+      "page": 5
+    },
+    {
+      "id": "prereq-grade",
+      "text": "A grade of C- or better is required in any course serving as a prerequisite for a course in the Neeley School unless the course states otherwise.",
+      "sourceId": "S1",
+      "page": null,
+      "needsReview": true
+    },
+    {
+      "id": "appeal",
+      "text": "Exceptions to any Neeley School policy require a formal appeal to the assistant dean of undergraduate programs.",
+      "sourceId": "S2",
+      "page": 6
+    },
+    {
+      "id": "double-major",
+      "text": "Students may double major in any combination of business disciplines; the number of hours needed must be confirmed with the Neeley Academic Advising Center.",
+      "sourceId": "S1",
+      "page": 588,
+      "advisorRequired": true
+    },
+    {
+      "id": "course-load",
+      "text": "Maximum credit load per term was not found in the supplied documents.",
+      "sourceId": null,
+      "unverified": true
+    }
+  ],
+  "core": [
+    {
+      "id": "fine-arts",
+      "name": "Fine Arts",
+      "hours": 3,
+      "group": "Critical and Creative Thinking"
+    },
+    {
+      "id": "humanities",
+      "name": "Humanities",
+      "hours": 9,
+      "group": "Critical and Creative Thinking"
+    },
+    {
+      "id": "social-sciences",
+      "name": "Social Sciences",
+      "hours": 9,
+      "group": "Critical and Creative Thinking"
+    },
+    {
+      "id": "historical",
+      "name": "Historical Traditions",
+      "hours": 3,
+      "group": "Critical and Creative Thinking"
+    },
+    {
+      "id": "literary",
+      "name": "Literary Traditions",
+      "hours": 3,
+      "group": "Critical and Creative Thinking"
+    },
+    {
+      "id": "religious",
+      "name": "Religious Traditions",
+      "hours": 3,
+      "group": "Critical and Creative Thinking"
+    },
+    {
+      "id": "mathematics",
+      "name": "Mathematics",
+      "hours": 3,
+      "group": "Quantitative and Scientific Reasoning"
+    },
+    {
+      "id": "natural-sciences",
+      "name": "Natural Sciences",
+      "hours": 6,
+      "group": "Quantitative and Scientific Reasoning"
+    },
+    {
+      "id": "oral",
+      "name": "Oral Communication",
+      "hours": 3,
+      "group": "Communication"
+    },
+    {
+      "id": "wco1",
+      "name": "Written Communication 1",
+      "hours": 3,
+      "group": "Communication"
+    },
+    {
+      "id": "wco2",
+      "name": "Written Communication 2",
+      "hours": 3,
+      "group": "Communication"
+    },
+    {
+      "id": "writing-emphasis",
+      "name": "Writing Emphasis (in the major)",
+      "hours": 6,
+      "group": "Communication",
+      "note": "Finance majors need 9 hours"
+    },
+    {
+      "id": "cultural",
+      "name": "Cultural Awareness",
+      "hours": 3,
+      "group": "Responsible Citizenship"
+    },
+    {
+      "id": "global",
+      "name": "Global Awareness",
+      "hours": 3,
+      "group": "Responsible Citizenship"
+    },
+    {
+      "id": "citizenship",
+      "name": "Citizenship and Social Values",
+      "hours": 3,
+      "group": "Responsible Citizenship"
+    }
+  ],
+  "coreSource": {
+    "sourceId": "S1",
+    "page": 203,
+    "note": "Courses may satisfy more than one requirement, so the Core ranges from 39 to 63 hours."
+  },
+  "lowerDivision": {
+    "sourceId": "S1",
+    "page": 587,
+    "required": [
+      "ENGL10803",
+      "ECON10223"
+    ],
+    "oneOf": [
+      [
+        "MATH10283",
+        "MATH10524"
+      ]
+    ],
+    "beforeDeclaringMajor": [
+      "ACCT20353",
+      "INSC20153",
+      "INSC20263"
+    ],
+    "notes": [
+      "No credit is awarded for both MATH 10283 and MATH 10524.",
+      "Microsoft Office Basic Excel exam is required before enrolling in INSC 20153."
+    ]
+  },
+  "businessCore": {
+    "sourceId": "S1",
+    "page": 587,
+    "courses": [
+      {
+        "code": "ENTR20263",
+        "credits": 3
+      },
+      {
+        "code": "MARK30153",
+        "credits": 3
+      },
+      {
+        "code": "FINA30153",
+        "credits": 3
+      },
+      {
+        "code": "INSC30313",
+        "credits": 3
+      },
+      {
+        "code": "INSC30801",
+        "credits": 1
+      },
+      {
+        "code": "MANA30250",
+        "credits": 1.5
+      },
+      {
+        "code": "MANA40250",
+        "credits": 1.5
+      }
+    ]
+  },
+  "suggestedSequence": {
+    "sourceId": "S1",
+    "page": 590,
+    "firstFall": [
+      "Core course",
+      "ENGL10803",
+      "MATH10283 or MATH10273",
+      "ECON10223"
+    ],
+    "firstSpring": [
+      "MATH10283 or INSC20153",
+      "ECON10233",
+      "ENTR20263",
+      "Core course",
+      "Core course"
+    ],
+    "sophomoreFall": [
+      "ENGL20803",
+      "INSC20263",
+      "ACCT20353",
+      "Core course",
+      "INSC20153 or ENTR20263"
+    ],
+    "sophomoreSpring": [
+      "FINA30153",
+      "MARK30153",
+      "INSC30313",
+      "Core course",
+      "Core course"
+    ]
+  },
+  "majors": [
+    {
+      "id": "accounting",
+      "name": "Accounting",
+      "degree": "BBA",
+      "sourceId": "S1",
+      "page": 588,
+      "totalHours": "31.5-33",
+      "writingEmphasisHours": 6,
+      "required": [
+        {
+          "code": "ACCT30153"
+        },
+        {
+          "code": "ACCT30163"
+        },
+        {
+          "code": "ACCT30253"
+        },
+        {
+          "code": "ACCT30303"
+        },
+        {
+          "code": "ACCT30273"
+        },
+        {
+          "code": "ACCT40223"
+        },
+        {
+          "code": "ACCT40253"
+        },
+        {
+          "code": "ACCT30450",
+          "credits": 1.5
+        },
+        {
+          "code": "ACCT30460",
+          "credits": 1.5
+        }
+      ],
+      "groups": [
+        {
+          "id": "assoc-grad",
+          "label": "Associated: 6 hours from graduate-level 4+1 courses",
+          "hours": 6,
+          "from": [
+            "ACCT55153",
+            "ACCT55303",
+            "ACCT55253"
+          ],
+          "advisorNote": "These are 55000-level (graduate) courses; confirm 4+1 eligibility with an advisor."
+        },
+        {
+          "id": "assoc-global",
+          "label": "Associated: 1.5-3 hours global",
+          "hours": 3,
+          "from": [
+            "FINA40623",
+            "BUSI30383",
+            "ACCT55260"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bis",
+      "name": "Business Information Systems",
+      "degree": "BBA",
+      "sourceId": "S1",
+      "page": 594,
+      "totalHours": 24,
+      "writingEmphasisHours": 6,
+      "required": [
+        {
+          "code": "INSC30723"
+        },
+        {
+          "code": "INSC30823"
+        },
+        {
+          "code": "INSC30833"
+        },
+        {
+          "code": "INSC30853"
+        },
+        {
+          "code": "INSC40813"
+        },
+        {
+          "code": "INSC40843"
+        },
+        {
+          "code": "INSC40383"
+        },
+        {
+          "code": "BUSI30383",
+          "associated": true
+        }
+      ],
+      "substitutions": [
+        {
+          "replace": "INSC40843",
+          "with": "INSC30273",
+          "note": "INSC 30273 Intro to Machine Learning may be substituted for INSC 40843 (catalog note)."
+        },
+        {
+          "replace": "INSC30833",
+          "with": "INSC30283",
+          "note": "INSC 30283 Deep Learning Technologies may be substituted for INSC 30833 (catalog note)."
+        }
+      ],
+      "groups": []
+    },
+    {
+      "id": "entrepreneurship",
+      "name": "Entrepreneurship and Innovation",
+      "degree": "BBA",
+      "sourceId": "S1",
+      "page": 595,
+      "totalHours": 27,
+      "writingEmphasisHours": 6,
+      "required": [
+        {
+          "code": "ENTR30303"
+        },
+        {
+          "code": "ENTR30533"
+        },
+        {
+          "code": "ENTR40143"
+        },
+        {
+          "code": "ENTR40243"
+        },
+        {
+          "code": "ACCT40163",
+          "associated": true
+        },
+        {
+          "code": "BUSI30383",
+          "associated": true
+        }
+      ],
+      "groups": [
+        {
+          "id": "ei-electives",
+          "label": "Electives: 9 hours (at least 3 ENTR, at most 6 from another department)",
+          "hours": 9,
+          "minFromSubject": {
+            "ENTR": 3
+          },
+          "maxOutsideSubject": {
+            "ENTR": 6
+          },
+          "from": [
+            "ENTR30113",
+            "ENTR30123",
+            "ENTR30483",
+            "ENTR30543",
+            "ENTR40123",
+            "ENTR40163",
+            "ENTR40233",
+            "ENTR40313",
+            "ENTR40333",
+            "FINA30303",
+            "INSC30723",
+            "INSC40303",
+            "INSC40323",
+            "INSC40383",
+            "MANA40203",
+            "MANA40223",
+            "MANA40633",
+            "MARK30113",
+            "MARK40223",
+            "MARK40243"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "finance",
+      "name": "Finance",
+      "degree": "BBA",
+      "sourceId": "S1",
+      "page": 596,
+      "totalHours": "30-31.5",
+      "writingEmphasisHours": 9,
+      "writingEmphasisCourses": [
+        "FINA30203",
+        "FINA30213"
+      ],
+      "required": [
+        {
+          "code": "FINA30203"
+        },
+        {
+          "code": "FINA30213"
+        },
+        {
+          "code": "FINA30233"
+        },
+        {
+          "code": "FINA40153"
+        },
+        {
+          "code": "ACCT30153"
+        },
+        {
+          "code": "ACCT30253"
+        },
+        {
+          "code": "ECON10233",
+          "associated": true
+        }
+      ],
+      "groups": [
+        {
+          "id": "fin-electives",
+          "label": "Electives: 6 hours of finance electives",
+          "hours": 6,
+          "from": [
+            "FINA30223",
+            "FINA30303",
+            "FINA30623",
+            "FINA40183",
+            "FINA40193",
+            "FINA40313",
+            "FINA40533",
+            "FINA40603",
+            "FINA40613",
+            "FINA40623",
+            "ACCT30303"
+          ],
+          "note": "Only the listed FINA 40970 special topics (Alternative Asset Investments; Equity Investments Practicum) count."
+        },
+        {
+          "id": "fin-global",
+          "label": "Associated: one of International Finance or Global Business with an Ethical Lens",
+          "hours": 3,
+          "from": [
+            "FINA40623",
+            "BUSI30383"
+          ],
+          "followUp": "If FINA 40623 is taken instead of BUSI 30383, also take ACCT 30450 or ACCT 30460 (1.5 hours)."
+        }
+      ]
+    },
+    {
+      "id": "finance-re",
+      "name": "Finance with Real Estate Concentration",
+      "degree": "BBA",
+      "sourceId": "S1",
+      "page": 597,
+      "totalHours": "33-34.5",
+      "writingEmphasisHours": 9,
+      "required": [
+        {
+          "code": "FINA30203"
+        },
+        {
+          "code": "FINA30213"
+        },
+        {
+          "code": "FINA30233"
+        },
+        {
+          "code": "FINA40153"
+        },
+        {
+          "code": "FINA30313"
+        },
+        {
+          "code": "FINA30623"
+        },
+        {
+          "code": "FINA40613"
+        },
+        {
+          "code": "ACCT30153"
+        },
+        {
+          "code": "ECON10233",
+          "associated": true
+        }
+      ],
+      "groups": [
+        {
+          "id": "finre-electives",
+          "label": "3 hours from approved finance electives",
+          "hours": 3,
+          "from": [
+            "FINA30223",
+            "FINA30303",
+            "FINA40183",
+            "FINA40193",
+            "FINA40313",
+            "FINA40533",
+            "FINA40603",
+            "FINA40623",
+            "ACCT30303"
+          ]
+        },
+        {
+          "id": "finre-global",
+          "label": "Associated: one of International Finance or Global Business",
+          "hours": 3,
+          "from": [
+            "FINA40623",
+            "BUSI30383"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "management",
+      "name": "Management",
+      "degree": "BBA",
+      "sourceId": "S1",
+      "page": 598,
+      "totalHours": 27,
+      "writingEmphasisHours": 6,
+      "required": [
+        {
+          "code": "MANA30323"
+        },
+        {
+          "code": "MANA40203"
+        },
+        {
+          "code": "MANA40213"
+        },
+        {
+          "code": "MANA40153"
+        },
+        {
+          "code": "MANA40633"
+        },
+        {
+          "code": "ACCT40163",
+          "associated": true
+        },
+        {
+          "code": "BUSI30383",
+          "associated": true
+        }
+      ],
+      "groups": [
+        {
+          "id": "mana-electives",
+          "label": "Electives: 6 hours (at least 3 hours of MANA)",
+          "hours": 6,
+          "minFromSubject": {
+            "MANA": 3
+          },
+          "from": [
+            "MANA40223",
+            "MANA40343",
+            "ENTR30543",
+            "ENTR40333",
+            "FINA30223",
+            "INSC30723",
+            "MARK30303",
+            "COMM30103",
+            "ECON30223",
+            "ECON40133",
+            "GEOG30323"
+          ],
+          "note": "No credit for both MARK 30303 Design Thinking and ENTR 30543."
+        }
+      ]
+    },
+    {
+      "id": "marketing",
+      "name": "Marketing",
+      "degree": "BBA",
+      "sourceId": "S1",
+      "page": 600,
+      "totalHours": 27,
+      "writingEmphasisHours": 6,
+      "required": [
+        {
+          "code": "MARK30113"
+        },
+        {
+          "code": "MARK30243"
+        },
+        {
+          "code": "MARK40203"
+        },
+        {
+          "code": "ACCT40163",
+          "associated": true
+        },
+        {
+          "code": "BUSI30383",
+          "associated": true
+        }
+      ],
+      "groups": [
+        {
+          "id": "mark-electives",
+          "label": "Electives: 12 hours",
+          "hours": 12,
+          "from": [
+            "MARK30223",
+            "MARK30233",
+            "MARK30253",
+            "MARK30303",
+            "MARK40103",
+            "MARK40113",
+            "MARK40143",
+            "MARK40213",
+            "MARK40223",
+            "MARK40233",
+            "MARK40243",
+            "MARK40253",
+            "MARK40263",
+            "MARK40273",
+            "INSC40323"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "scm",
+      "name": "Supply and Value Chain Management",
+      "degree": "BBA",
+      "sourceId": "S1",
+      "page": 601,
+      "totalHours": 21,
+      "writingEmphasisHours": 6,
+      "required": [
+        {
+          "code": "INSC40313"
+        },
+        {
+          "code": "INSC40323"
+        },
+        {
+          "code": "INSC40343"
+        },
+        {
+          "code": "BUSI30383",
+          "associated": true
+        }
+      ],
+      "groups": [
+        {
+          "id": "scm-electives",
+          "label": "Electives: 12 hours (at most 6 outside INSC)",
+          "hours": 12,
+          "maxOutsideSubject": {
+            "INSC": 6
+          },
+          "from": [
+            "INSC30513",
+            "INSC30723",
+            "INSC40303",
+            "INSC40353",
+            "INSC40383",
+            "INSC40843",
+            "ACCT40163",
+            "GEOG30313",
+            "GEOG30323",
+            "GEOG40323",
+            "MANA40633",
+            "MARK30303",
+            "MARK40223",
+            "MARK40243"
+          ]
+        }
+      ]
+    }
+  ],
+  "minors": [
+    {
+      "id": "accounting-minor",
+      "name": "Accounting Minor",
+      "sourceId": "S1",
+      "page": 602,
+      "totalHours": 18,
+      "forMajors": "business",
+      "minGpa": 2.5,
+      "required": [
+        {
+          "code": "ACCT20353"
+        },
+        {
+          "code": "ACCT30153"
+        },
+        {
+          "code": "ACCT30163"
+        },
+        {
+          "code": "ACCT30253"
+        },
+        {
+          "code": "ACCT30303"
+        },
+        {
+          "code": "FINA30153"
+        }
+      ],
+      "groups": [],
+      "notes": [
+        "All coursework must be completed at TCU once matriculated."
+      ]
+    },
+    {
+      "id": "finance-minor",
+      "name": "Finance Minor",
+      "sourceId": "S1",
+      "page": 603,
+      "totalHours": 18,
+      "forMajors": "business",
+      "minGpa": 2.5,
+      "required": [
+        {
+          "code": "ACCT30153"
+        },
+        {
+          "code": "FINA30153"
+        },
+        {
+          "code": "FINA30203"
+        },
+        {
+          "code": "FINA30213"
+        }
+      ],
+      "groups": [
+        {
+          "id": "finmin-electives",
+          "label": "6 hours of finance electives",
+          "hours": 6,
+          "from": [
+            "FINA30223",
+            "FINA30233",
+            "FINA40153",
+            "FINA40183",
+            "FINA40193",
+            "FINA40533",
+            "FINA40623"
+          ]
+        }
+      ],
+      "notes": [
+        "All coursework must be completed at TCU once matriculated."
+      ]
+    },
+    {
+      "id": "global-business-minor",
+      "name": "Global Business Minor",
+      "sourceId": "S1",
+      "page": 604,
+      "totalHours": 18,
+      "forMajors": "business",
+      "required": [],
+      "groups": [
+        {
+          "id": "gb-neeley",
+          "label": "9 hours of Neeley international courses",
+          "hours": 9,
+          "from": [
+            "FINA40623",
+            "MANA40223",
+            "MANA40343",
+            "MARK40213",
+            "INSC40353"
+          ]
+        }
+      ],
+      "notes": [
+        "Also required: 6 hours of non-business, non-language courses with a Global Awareness designation (beyond Core), familiarity with a second language (3 hours of TCU foreign language for English speakers), and 6 hours of approved study abroad. These parts cannot be checked from the data supplied; confirm with an advisor."
+      ],
+      "advisorRequired": true
+    }
+  ]
+}
