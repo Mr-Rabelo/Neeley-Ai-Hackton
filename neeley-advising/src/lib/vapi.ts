@@ -1,7 +1,7 @@
 import { toolsFor } from "./ai/tools";
 
 export function vapiBrowserConfigured(): boolean {
-  return !!(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY && process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID);
+  return !!((process.env.NEXT_PUBLIC_VAPI_PUBLIC_CONFIG || process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY) && (process.env.NEXT_PUBLIC_VAPI_ASSISTANT_CONFIG || process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID));
 }
 
 export function vapiToolsConfigured(): boolean {

@@ -67,3 +67,26 @@ describe("Vapi custom tool endpoint", () => {
     expect(callback.error).toMatch(/consent/i);
   });
 });
+
+describe("browser voice configuration names", () => {
+  it("accepts the _CONFIG names and still accepts the older names", async () => {
+    const { vapiBrowserConfigured } = await import("@/lib/vapi");
+    const names = ["NEXT_PUBLIC_VAPI_PUBLIC_CONFIG", "NEXT_PUBLIC_VAPI_ASSISTANT_CONFIG", "NEXT_PUBLIC_VAPI_PUBLIC_KEY", "NEXT_PUBLIC_VAPI_ASSISTANT_ID"];
+    const saved = Object.fromEntries(names.map((n) => [n, process.env[n]]));
+    try {
+      for (const n of names) delete process.env[n];
+      expect(vapiBrowserConfigured()).toBe(false);
+      process.env.NEXT_PUBLIC_VAPI_PUBLIC_CONFIG = "pk";
+      expect(vapiBrowserConfigured()).toBe(false);
+      process.env.NEXT_PUBLIC_VAPI_ASSISTANT_CONFIG = "asst";
+      expect(vapiBrowserConfigured()).toBe(true);
+      delete process.env.NEXT_PUBLIC_VAPI_PUBLIC_CONFIG;
+      delete process.env.NEXT_PUBLIC_VAPI_ASSISTANT_CONFIG;
+      process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY = "pk";
+      process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID = "asst";
+      expect(vapiBrowserConfigured()).toBe(true);
+    } finally {
+      for (const n of names) { if (saved[n] === undefined) delete process.env[n]; else process.env[n] = saved[n]; }
+    }
+  });
+});

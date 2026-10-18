@@ -4,7 +4,7 @@
 //   node scripts/vapi-sync.mjs --dry-run   # print the update without sending it
 //   node scripts/vapi-sync.mjs             # apply it
 //
-// Needs VAPI_PRIVATE_KEY (a Vapi *private* key; keep it out of NEXT_PUBLIC_ variables), NEXT_PUBLIC_VAPI_ASSISTANT_ID,
+// Needs VAPI_PRIVATE_KEY (a Vapi *private* key; keep it out of NEXT_PUBLIC_ variables), NEXT_PUBLIC_VAPI_ASSISTANT_CONFIG (or the older NEXT_PUBLIC_VAPI_ASSISTANT_ID),
 // APP_BASE_URL (the deployed app, for the tool URL) and either VAPI_TOOL_CREDENTIAL_ID (preferred: the Vapi custom
 // credential that sends x-vapi-secret) or VAPI_SERVER_SECRET. The assistant's model provider and model are kept as set
 // in the Vapi dashboard; this only replaces the system prompt, the call settings and the Neeley tools.
@@ -18,14 +18,14 @@ const dryRun = process.argv.includes("--dry-run");
 
 const env = (k) => process.env[k]?.trim() || "";
 const key = env("VAPI_PRIVATE_KEY");
-const assistantId = env("VAPI_ASSISTANT_ID") || env("NEXT_PUBLIC_VAPI_ASSISTANT_ID");
+const assistantId = env("VAPI_ASSISTANT_ID") || env("NEXT_PUBLIC_VAPI_ASSISTANT_CONFIG") || env("NEXT_PUBLIC_VAPI_ASSISTANT_ID");
 const baseUrl = env("APP_BASE_URL").replace(/\/+$/, "");
 const credentialId = env("VAPI_TOOL_CREDENTIAL_ID");
 const secret = env("VAPI_SERVER_SECRET");
 
 const missing = [
   !key && "VAPI_PRIVATE_KEY",
-  !assistantId && "NEXT_PUBLIC_VAPI_ASSISTANT_ID",
+  !assistantId && "NEXT_PUBLIC_VAPI_ASSISTANT_CONFIG",
   !baseUrl && "APP_BASE_URL",
   !credentialId && !secret && "VAPI_TOOL_CREDENTIAL_ID or VAPI_SERVER_SECRET",
 ].filter(Boolean);

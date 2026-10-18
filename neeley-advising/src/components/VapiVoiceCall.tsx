@@ -5,8 +5,9 @@ import Vapi from "@vapi-ai/web";
 
 type CallStatus = "idle" | "connecting" | "active";
 
-const publicKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
-const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID;
+// The _CONFIG names avoid Vercel's "key in a NEXT_PUBLIC_ name" warning; the old names still work.
+const publicKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_CONFIG || process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
+const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_CONFIG || process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID;
 
 export function VapiVoiceCall() {
   const clientRef = useRef<Vapi | null>(null);
