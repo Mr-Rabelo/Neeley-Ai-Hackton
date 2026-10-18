@@ -22,6 +22,8 @@ const PATHS: Record<string, string> = {
   cap: "M2 9l10-5 10 5-10 5L2 9Zm5 3v5c0 1.5 2.2 3 5 3s5-1.5 5-3v-5",
   chevron: "M9 6l6 6-6 6",
   info: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-10v6m0-9v.5",
+  lock: "M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3",
+  upload: "M12 16V4m0 0-4 4m4-4 4 4M4 20h16",
 };
 
 export function Icon({ name, size = 18 }: { name: keyof typeof PATHS | string; size?: number }) {

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { DifficultyView, MarketView } from "@/lib/market";
 import { getJson, postJson, ApiError } from "@/lib/client";
 import { Card, Src } from "./Bits";
+import { Stat } from "./ui";
 
 const money = (n: number) => `$${n.toLocaleString("en-US")}`;
 const pct = (n: number) => `${n > 0 ? "+" : ""}${n}%`;
@@ -23,7 +24,7 @@ export function useMarket(majorId: string | null) {
   return { data, err };
 }
 
-export function MarketPanel({ data, aiIds, interests }: { data: MarketData; aiIds?: string[]; interests?: string }) {
+export function MarketPanel({ data, aiIds, interests, compact }: { data: MarketData; aiIds?: string[]; interests?: string; compact?: boolean }) {
   const m = data.market;
   const d = data.difficulty;
   const [analysis, setAnalysis] = useState<string | null>(null);
@@ -40,13 +41,13 @@ export function MarketPanel({ data, aiIds, interests }: { data: MarketData; aiId
   }
   return (
     <div className="stack">
-      <div className="banner banner-info" role="note"><span aria-hidden>i</span><div><b>Possibilities, not guarantees.</b> {m.disclaimer}</div></div>
-      <div className="grid grid-4">
-        <Card><div className="small">Outlook</div><h3 style={{ fontSize: 22 }}>{m.outlookLabel}</h3><p className="small">{m.aggregate.weightedGrowthPct10}% projected over {m.period} (BLS)</p></Card>
-        <Card><div className="small">Estimated 3 years</div><h3 style={{ fontSize: 22 }}>{pct(m.aggregate.est3yrPct)}</h3><p className="small">Interpolated estimate, not a BLS figure</p></Card>
-        <Card><div className="small">Estimated 5 years</div><h3 style={{ fontSize: 22 }}>{pct(m.aggregate.est5yrPct)}</h3><p className="small">Interpolated estimate, not a BLS figure</p></Card>
-        <Card><div className="small">Median pay, 2025</div><h3 style={{ fontSize: 22 }}>{money(m.aggregate.medianPayLow)}{m.aggregate.medianPayHigh !== m.aggregate.medianPayLow ? ` to ${money(m.aggregate.medianPayHigh)}` : ""}</h3><p className="small">Across the roles below</p></Card>
-      </div>
+      <div className="banner banner-info" role="note"><span aria-hidden>i</span><div><b>Possibilities, not guarantees.</b> {m.disclaimer.replace(/^Possibilities, not guarantees\.\s*/, "")}</div></div>
+      {!compact && <div className="stat-grid">
+        <Stat icon="chart" label="Outlook" value={m.outlookLabel} note={`${m.aggregate.weightedGrowthPct10}% projected over ${m.period} (BLS)`} />
+        <Stat icon="flag" label="Estimated 3 years" value={pct(m.aggregate.est3yrPct)} note="Interpolated estimate, not a BLS figure" />
+        <Stat icon="target" label="Estimated 5 years" value={pct(m.aggregate.est5yrPct)} note="Interpolated estimate, not a BLS figure" />
+        <Stat icon="layers" label="Median pay, 2025" value={<>{money(m.aggregate.medianPayLow)}{m.aggregate.medianPayHigh !== m.aggregate.medianPayLow ? ` to ${money(m.aggregate.medianPayHigh)}` : ""}</>} note="Across the roles below" />
+      </div>}
       <div className="table-wrap">
         <table>
           <thead><tr><th scope="col">Example role (BLS)</th><th scope="col">Median pay</th><th scope="col">10-yr growth</th><th scope="col">Est. 3 / 5 yr</th><th scope="col">Openings per year</th></tr></thead>

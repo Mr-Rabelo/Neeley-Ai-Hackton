@@ -23,7 +23,7 @@ export default function Feedback() {
       <Card>
         <form className="stack" onSubmit={(e) => { e.preventDefault(); if (rating) void send(); }}>
           <fieldset style={{ border: 0, padding: 0, margin: 0 }}><legend style={{ fontWeight: 600, marginBottom: 8 }}>How helpful was this? (1 to 5)</legend>
-            <div className="row">{[1, 2, 3, 4, 5].map((n) => <button type="button" key={n} className="chip" aria-pressed={rating === n} onClick={() => setRating(n)}>{n}</button>)}</div></fieldset>
+            <div className="row">{[1, 2, 3, 4, 5].map((n) => <button type="button" key={n} className="chip" aria-pressed={rating === n} onClick={() => setRating(n)}>{n}</button>)}</div><div className="row-between small" style={{ maxWidth: 300, marginTop: 4 }}><span>Not helpful</span><span>Very helpful</span></div></fieldset>
           <div className="field"><label htmlFor="m">What was missing?</label><textarea id="m" value={missing} onChange={(e) => setMissing(e.target.value)} maxLength={1000} /></div>
           <fieldset style={{ border: 0, padding: 0, margin: 0 }}><legend style={{ fontWeight: 600, marginBottom: 8 }}>Would you recommend it?</legend><div className="row"><button type="button" className="chip" aria-pressed={rec === true} onClick={() => setRec(true)}>Yes</button><button type="button" className="chip" aria-pressed={rec === false} onClick={() => setRec(false)}>No</button></div></fieldset>
           <label className="check"><input type="checkbox" checked={follow} onChange={(e) => setFollow(e.target.checked)} /> <span>I would like a follow-up.</span></label>

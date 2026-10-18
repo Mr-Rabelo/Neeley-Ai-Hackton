@@ -109,6 +109,7 @@ export function Chat({ mode, record, profile, intro, starters, initial }: { mode
       </div>
       {msgs.length === 1 && starters && (
         <div className="row" style={{ gap: 8 }}>
+          <span className="small">Try asking</span>
           {starters.map((s) => <button key={s} className="chip" disabled={busy} onClick={() => send(s)}>{s}</button>)}
         </div>
       )}

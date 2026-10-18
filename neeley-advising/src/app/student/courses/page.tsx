@@ -5,6 +5,7 @@ import type { PlanResult } from "@/lib/types";
 import { useStudent } from "@/components/StudentContext";
 import { Card, NeedStudent } from "@/components/Bits";
 import { RequirementRow } from "@/components/PlanView";
+import { Icon, Stat } from "@/components/ui";
 import { getJson, postJson } from "@/lib/client";
 
 interface Row { code: string; title: string; department: string; offered: string; prerequisites: string }
@@ -15,6 +16,7 @@ export default function CoursesPage() {
   const [q, setQ] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
   const [searched, setSearched] = useState(false);
+  const [show, setShow] = useState<"open" | "remaining" | "in_progress" | "complete">("open");
   useEffect(() => { if (record) postJson<{ plan: PlanResult }>("/api/plan", { record }).then((r) => setPlan(r.plan)).catch(() => undefined); }, [record]);
   useEffect(() => {
     if (q.trim().length < 2) { setRows([]); setSearched(false); return; }
@@ -23,7 +25,6 @@ export default function CoursesPage() {
   }, [q]);
   if (!ready) return <p>Loading…</p>;
   if (!record) return <NeedStudent />;
-  const open = plan?.requirements.filter((r) => r.status !== "complete") ?? [];
   const done = plan?.requirements.filter((r) => r.status === "complete") ?? [];
   const aggregate = plan ? plan.requirements.reduce((a, r) => ({ need: a.need + r.hoursNeeded, done: a.done + r.hoursDone, prog: a.prog + r.hoursInProgress }), { need: 0, done: 0, prog: 0 }) : null;
   return (
@@ -42,21 +43,45 @@ export default function CoursesPage() {
         )}
       </Card>
       {!plan && <p><span className="spin" aria-hidden /> Checking requirements…</p>}
-      {plan && aggregate && (
-        <>
-          <Card title="Remaining requirements">
-            <p className="small" style={{ marginBottom: 14 }}>Across all groups: {aggregate.done} hours done, {aggregate.prog} in progress, {aggregate.need} needed. Hours can count in more than one group, so groups do not add to 120.</p>
-            <div className="stack" style={{ gap: 20 }}>{open.map((r) => <RequirementRow key={r.id} r={r} />)}</div>
-          </Card>
-          <details><summary>Completed requirements ({done.length})</summary><div className="stack" style={{ gap: 16, marginTop: 12 }}>{done.map((r) => <RequirementRow key={r.id} r={r} />)}</div></details>
-          {plan.slips.filter((s) => s.slipTerms > 0).length > 0 && (
-            <Card title="Courses where a miss costs a term">
-              <ul className="stack" style={{ gap: 8, paddingLeft: 18, margin: 0 }}>{plan.slips.filter((s) => s.slipTerms > 0).map((s) => <li key={s.code}><Link href={`/course/${s.code}`}>{s.code.replace(/^([A-Z]+)(\d+)$/, "$1 $2")}</Link> {s.title}: about {s.slipTerms} term{s.slipTerms > 1 ? "s" : ""} later if missed</li>)}</ul>
-              <p className="small" style={{ marginTop: 10 }}>Engine calculation (slip test) from the catalog&apos;s typical offering pattern.</p>
-            </Card>
-          )}
-        </>
-      )}
+      {plan && aggregate && (() => {
+        const counts = { remaining: plan.requirements.filter((r) => r.status === "remaining").length, in_progress: plan.requirements.filter((r) => r.status === "in_progress").length, complete: done.length };
+        const shown = plan.requirements.filter((r) => (show === "open" ? r.status !== "complete" : r.status === show));
+        const slips = plan.slips.filter((s) => s.slipTerms > 0);
+        return (
+          <>
+            <section className="stack" aria-labelledby="req-h">
+              <h2 id="req-h">Remaining requirements</h2>
+              <div className="stat-grid" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+                <Stat icon="check" label="Done" value={`${aggregate.done} hrs`} />
+                <Stat icon="chart" label="In progress" value={`${aggregate.prog} hrs`} />
+                <Stat icon="layers" label="Needed across groups" value={`${aggregate.need} hrs`} />
+              </div>
+              <p className="small">Hours can count in more than one group, so groups do not add to 120.</p>
+              <div className="tabs" role="tablist" aria-label="Filter requirements">
+                {([["open", `Still open (${counts.remaining + counts.in_progress})`], ["remaining", `Still needed (${counts.remaining})`], ["in_progress", `In progress (${counts.in_progress})`], ["complete", `Done (${counts.complete})`]] as const).map(([k, label]) => (
+                  <button key={k} role="tab" aria-selected={show === k} className="tab" onClick={() => setShow(k)}>{label}</button>
+                ))}
+              </div>
+              <Card><div className="stack" style={{ gap: 20 }}>{shown.map((r) => <RequirementRow key={r.id} r={r} />)}{!shown.length && <p className="small">Nothing in this group.</p>}</div></Card>
+            </section>
+            {slips.length > 0 && (
+              <section className="stack" aria-labelledby="slip-h">
+                <h2 id="slip-h">Courses where a miss costs a term</h2>
+                <div className="three">
+                  {slips.map((s) => (
+                    <div key={s.code} className="mini">
+                      <h3><Icon name="alert" size={16} /><Link href={`/course/${s.code}`}>{s.code.replace(/^([A-Z]+)(\d+)$/, "$1 $2")}</Link></h3>
+                      <span>{s.title}</span>
+                      <span className="badge b-warn" style={{ alignSelf: "flex-start" }}>about {s.slipTerms} term{s.slipTerms > 1 ? "s" : ""} later if missed</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="small">Engine calculation (slip test) from the catalog&apos;s typical offering pattern.</p>
+              </section>
+            )}
+          </>
+        );
+      })()}
     </div>
   );
 }

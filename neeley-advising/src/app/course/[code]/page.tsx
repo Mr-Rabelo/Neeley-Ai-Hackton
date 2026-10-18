@@ -43,6 +43,7 @@ export default function CoursePage({ params }: { params: Promise<{ code: string 
   return (
     <div className="wrap stack-lg">
       <div className="stack">
+        <div><Link href="/student/courses" className="small">← Back to courses</Link></div>
         <div className="eyebrow">{d.department}</div>
         <h1 className="page-title">{d.code} · {d.title}</h1>
         <p className="lede">{d.credits} credit hours. {d.yourStatus && <span className="badge b-neutral">Your status: {d.yourStatus.status.replace("_", " ")} ({d.yourStatus.grade})</span>}</p>
@@ -54,7 +55,7 @@ export default function CoursePage({ params }: { params: Promise<{ code: string 
           <div className="node center"><b style={{ fontSize: 18 }}>{d.code}</b><small>{d.title}</small></div>
           <div className="tree-col"><h4>Unlocks</h4>{d.unlockCodes.length ? d.unlockCodes.slice(0, 8).map((c) => { const s = statusOf(c, record); return <Link key={c} href={`/course/${c}`} className={`node ${s.cls}`}><b>{pretty(c)}</b>{s.text && <small>{s.text}</small>}</Link>; }) : <div className="small">No other Neeley program course lists this as a prerequisite.</div>}</div>
         </div>
-        <p className="small" style={{ marginTop: 14 }}>Solid green edge: completed. Dashed green: in progress. Grey: not taken. The tree covers Neeley program courses. <Src id={d.source.id} page={d.source.page} /></p>
+        <div className="row" style={{ marginTop: 14, gap: 8 }}><span className="badge b-ok">Solid green: completed</span><span className="badge b-info">Dashed green: in progress</span><span className="badge b-neutral">Grey: not taken</span></div><p className="small" style={{ marginTop: 8 }}>The tree covers Neeley program courses. <Src id={d.source.id} page={d.source.page} /></p>
       </Card>
 
       <div className="grid grid-2">

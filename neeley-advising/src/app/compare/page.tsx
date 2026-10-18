@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import type { MarketData } from "@/components/MarketPanel";
 import { Card } from "@/components/Bits";
@@ -35,9 +35,9 @@ function Inner() {
     <div className="field"><label htmlFor={label}>{label}</label><select id={label} value={v} onChange={(e) => set(e.target.value)}>{progs.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</select></div>
   );
   const cell = (d: MarketData | null, f: (d: MarketData) => string) => (d ? f(d) : "…");
-  const rows: [string, (d: MarketData | null, p?: Prog) => string][] = [
+  const rows: [string, (d: MarketData | null, p?: Prog) => ReactNode][] = [
     ["Catalog hours for the major", (_d, p) => (p ? `${p.totalHours} hours (catalog p.${p.page})` : "…")],
-    ["Required courses", (_d, p) => (p ? p.required.map((r) => `${r.code} ${r.title}`).join("; ") : "…")],
+    ["Required courses", (_d, p) => (p ? <details><summary>{p.required.length} courses</summary><ul style={{ margin: "6px 0 0", paddingLeft: 18 }}>{p.required.map((r) => <li key={r.code}>{r.code} {r.title}</li>)}</ul></details> : "…")],
     ["Choice requirements", (_d, p) => (p ? p.groups.map((g) => `${g.hours} hrs: ${g.label}`).join("; ") || "None" : "…")],
     ["Difficulty (estimate)", (d) => cell(d, (x) => `${x.difficulty.label}. ${x.difficulty.inputs.longestPrerequisiteChain}-course prerequisite chain, ${Math.round(x.difficulty.inputs.quantitativeShare * 100)}% quantitative`)],
     ["Demand outlook (BLS)", (d) => cell(d, (x) => `${x.market.outlookLabel}: ${x.market.aggregate.weightedGrowthPct10}% over ${x.market.period}`)],

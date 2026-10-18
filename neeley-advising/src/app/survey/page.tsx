@@ -66,7 +66,10 @@ export default function Survey() {
   }
 
   const Opts = ({ k, max }: { k: "interests" | "strengths" | "careers" | "values" | "worries"; max: number }) => (
-    <div className="row" role="group" aria-label="Options">{OPT[k].map(([id, label]) => <button key={id} className="chip" aria-pressed={a[k].includes(id)} onClick={() => multi(k, id, max)}>{label}</button>)}</div>
+    <>
+      <div className="row" role="group" aria-label="Options">{OPT[k].map(([id, label]) => <button key={id} className="chip" aria-pressed={a[k].includes(id)} onClick={() => multi(k, id, max)}>{label}</button>)}</div>
+      <p className="small" aria-live="polite">{a[k].length} of {max} picked</p>
+    </>
   );
   const Slider = ({ k, left, right }: { k: "quant" | "communication" | "people" | "creative" | "leadership"; left: string; right: string }) => (
     <div className="field">

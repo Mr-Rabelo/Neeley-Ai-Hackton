@@ -35,9 +35,9 @@ function Inner() {
     <div className="wrap stack-lg">
       <div className="stack"><div className="eyebrow">Next steps</div><h1 className="page-title">What would you like to do next?</h1><p className="lede">No pressure. Choose one, or just check and go.</p></div>
       <div className="grid grid-3">
-        <Card title="Apply (demo form)"><p className="small" style={{ margin: "6px 0 12px" }}>A mock application. It does not submit anything to TCU.</p><button className="btn btn-sm" onClick={() => setOpen("apply")}>Open the demo form</button></Card>
-        <Card title="Talk to an advisor"><p className="small" style={{ margin: "6px 0 12px" }}>Schedule a meeting, request a call back, or send your plan for review.</p><button className="btn btn-sm" onClick={() => setOpen("advisor")}>Connect to an advisor</button></Card>
-        <Card title="Just check, then go"><p className="small" style={{ margin: "6px 0 12px" }}>Close up and tell us how it went.</p><button className="btn btn-sm btn-ghost" onClick={() => setOpen("check")}>Close and go</button></Card>
+        <Card title="Apply (demo form)" className={open === "apply" ? "picked-card" : ""}><p className="small" style={{ margin: "6px 0 12px" }}>A mock application. It does not submit anything to TCU.</p><button className="btn btn-sm" onClick={() => setOpen("apply")}>Open the demo form</button></Card>
+        <Card title="Talk to an advisor" className={open === "advisor" ? "picked-card" : ""}><p className="small" style={{ margin: "6px 0 12px" }}>Schedule a meeting, request a call back, or send your plan for review.</p><button className="btn btn-sm" onClick={() => setOpen("advisor")}>Connect to an advisor</button></Card>
+        <Card title="Just check, then go" className={open === "check" ? "picked-card" : ""}><p className="small" style={{ margin: "6px 0 12px" }}>Close up and tell us how it went.</p><button className="btn btn-sm btn-ghost" onClick={() => setOpen("check")}>Close and go</button></Card>
       </div>
 
       {msg && <div className="banner banner-info" role="status"><span aria-hidden>✓</span><div>{msg} <Link href="/feedback">Tell us how it went</Link></div></div>}

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useStudent } from "@/components/StudentContext";
 import { Card, Src } from "@/components/Bits";
 import { Icon, Step } from "@/components/ui";
+import { SAMPLE_FACTS } from "@/lib/sample-facts";
 import type { Recommendations } from "@/lib/ai/recommend";
 import type { StudentProfile as Profile } from "@/lib/ai/profile";
 import { ApiError, postJson } from "@/lib/client";
@@ -29,6 +30,7 @@ export default function StudentHome() {
   const s = useStudent();
   const fileRef = useRef<HTMLInputElement>(null);
   const [pasted, setPasted] = useState("");
+  const [drag, setDrag] = useState(false);
   const [recs, setRecs] = useState<Recommendations | null>(null);
   const [recBusy, setRecBusy] = useState(false);
   const [recNote, setRecNote] = useState<string | null>(null);
@@ -53,23 +55,36 @@ export default function StudentHome() {
         <div className="stack"><div className="eyebrow">Current student</div><h1 className="page-title">Load your transcript</h1><p className="lede">We read it, show you what we found so you can correct it, then build your plan from the 2026-27 catalog.</p></div>
         {s.error && <div className="banner" role="alert"><span aria-hidden>!</span><div>{s.error}</div></div>}
         <div className="grid grid-2">
-          <Card title="Use the sample student">
-            <p>A demo transcript with a Business Information Systems and Finance double major, an Honors College plan, transfer credit and a few real-world wrinkles.</p>
-            <div style={{ marginTop: 14 }}><button className="btn" onClick={() => void s.loadSample()} disabled={s.loading}>{s.loading ? "Reading…" : "Use the sample student"}</button></div>
-          </Card>
-          <Card title="Upload a transcript PDF">
-            <p>A TCU unofficial transcript PDF or a .txt copy. Scanned images are not supported yet. <a href="/sample-transcript.pdf" download>Download the sample PDF</a> to try it.</p>
-            <div style={{ marginTop: 14 }} className="row">
-              <input ref={fileRef} type="file" accept=".pdf,.txt,application/pdf,text/plain" aria-label="Transcript file" onChange={(e) => { const f = e.target.files?.[0]; if (f) void s.loadFile(f); }} disabled={s.loading} />
+          <div className="step step-tint">
+            <header className="step-head"><span className="step-chip" style={{ marginLeft: 0 }}><span className="badge b-info">Try the demo</span></span></header>
+            <h2 style={{ fontSize: 22 }}>{SAMPLE_FACTS.name}</h2>
+            <p className="small">{SAMPLE_FACTS.plans}</p>
+            <div className="mini-stats">
+              <div><span className="small">Earned</span><b>{SAMPLE_FACTS.earned} hrs</b></div>
+              <div><span className="small">GPA</span><b>{SAMPLE_FACTS.gpa}</b></div>
+              <div><span className="small">Transfer</span><b>{SAMPLE_FACTS.transfer} hrs</b></div>
+              <div><span className="small">Started</span><b>{SAMPLE_FACTS.started}</b></div>
             </div>
-            <details style={{ marginTop: 12 }}>
+            <p>See how the app works with a made-up student record: a double major with transfer credit, an Honors College plan and a few real-world wrinkles. No real student data is used.</p>
+            <div><button className="btn" onClick={() => void s.loadSample()} disabled={s.loading}>{s.loading ? "Reading…" : "Use the sample student"} <Icon name="arrow" size={14} /></button></div>
+          </div>
+          <div className="step">
+            <header className="step-head"><h2>Upload a transcript PDF</h2></header>
+            <p className="small">A TCU unofficial transcript PDF or a .txt copy. Scanned images are not supported yet. <a href="/sample-transcript.pdf" download>Download the sample PDF</a> to try it.</p>
+            <label className={`dropzone${drag ? " over" : ""}`} onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files?.[0]; if (f && !s.loading) void s.loadFile(f); }}>
+              <Icon name="upload" size={26} />
+              <span><b>Drop your transcript here</b> or <span className="link-like">browse</span></span>
+              <span className="small">PDF or .txt · unofficial TCU transcript</span>
+              <input ref={fileRef} type="file" accept=".pdf,.txt,application/pdf,text/plain" aria-label="Transcript file" onChange={(e) => { const f = e.target.files?.[0]; if (f) void s.loadFile(f); }} disabled={s.loading} />
+            </label>
+            <details>
               <summary>Or paste the text</summary>
               <div className="stack" style={{ marginTop: 8 }}>
                 <textarea value={pasted} onChange={(e) => setPasted(e.target.value)} aria-label="Transcript text" placeholder="Paste transcript text here" />
                 <div><button className="btn btn-sm" disabled={s.loading || pasted.length < 40} onClick={() => void s.loadText(pasted)}>Read this text</button></div>
               </div>
             </details>
-          </Card>
+          </div>
         </div>
         <div className="banner banner-info" role="note"><span aria-hidden>i</span><div><b>Privacy.</b> Your transcript is kept in this browser, not saved on our server. When AI features are on, the transcript text is sent to Anthropic&apos;s API to be read and profiled. Use only sample data until TCU authorizes real student records.</div></div>
       </div>

@@ -9,7 +9,8 @@ type CallStatus = "idle" | "connecting" | "active";
 const publicKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_CONFIG || process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
 const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_CONFIG || process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID;
 
-export function VapiVoiceCall() {
+export function VapiVoiceCall({ tone }: { tone?: "onDark" } = {}) {
+  const dark = tone === "onDark" ? " on-dark" : "";
   const clientRef = useRef<Vapi | null>(null);
   const [status, setStatus] = useState<CallStatus>("idle");
   const [error, setError] = useState("");
@@ -67,7 +68,7 @@ export function VapiVoiceCall() {
 
   if (!publicKey || !assistantId) {
     return (
-      <p className="small" role="status">
+      <p className={`small${dark}`} role="status">
         Voice calling is not configured yet. Add the Vapi public key and assistant ID to the app environment.
       </p>
     );
@@ -75,10 +76,10 @@ export function VapiVoiceCall() {
 
   return (
     <div className="stack" style={{ alignItems: "flex-start", gap: 10 }}>
-      <button className="btn" type="button" onClick={toggleCall} disabled={status === "connecting"} aria-pressed={status === "active"}>
+      <button className={`btn${tone === "onDark" ? " btn-outline-light" : ""}`} type="button" onClick={toggleCall} disabled={status === "connecting"} aria-pressed={status === "active"}>
         {status === "active" ? "End voice call" : status === "connecting" ? "Connecting…" : "Start voice call"}
       </button>
-      <p className="small" role="status" aria-live="polite">
+      <p className={`small${dark}`} role="status" aria-live="polite">
         {error || (status === "active" ? "Connected. Speak naturally, or end the call when you are done." : status === "connecting" ? "Connecting to the Neeley AI assistant…" : "Your browser will ask for microphone access.")}
       </p>
     </div>

@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import type { PlanResult } from "@/lib/types";
 import { MarketPanel, useMarket } from "@/components/MarketPanel";
 import { PlanView } from "@/components/PlanView";
+import { Collapse, Stat } from "@/components/ui";
 import { getJson } from "@/lib/client";
 
 export default function Explore({ params }: { params: Promise<{ major: string }> }) {
@@ -18,7 +19,23 @@ export default function Explore({ params }: { params: Promise<{ major: string }>
       {err && <div className="banner" role="alert"><span aria-hidden>!</span><div>{err}</div></div>}
       {!plan && !err && <p><span className="spin" aria-hidden /> Building the plan…</p>}
       {plan && <PlanView plan={plan} />}
-      <section className="stack"><h2>Job market and routes</h2>{data ? <MarketPanel data={data} aiIds={[major]} /> : <p><span className="spin" aria-hidden /> Loading…</p>}</section>
+      <section className="stack" aria-labelledby="mk-h">
+        <h2 id="mk-h">Job market and routes</h2>
+        {data ? (
+          <>
+            <div className="banner banner-info" role="note"><span aria-hidden>i</span><div><b>Possibilities, not guarantees.</b> {data.market.disclaimer.replace(/^Possibilities, not guarantees\.\s*/, "")}</div></div>
+            <div className="stat-grid">
+              <Stat icon="chart" label="Outlook" value={data.market.outlookLabel} note={`${data.market.aggregate.weightedGrowthPct10}% over ${data.market.period} (BLS)`} />
+              <Stat icon="flag" label="Estimated 3 years" value={`${data.market.aggregate.est3yrPct > 0 ? "+" : ""}${data.market.aggregate.est3yrPct}%`} note="Interpolated estimate, not a BLS figure" />
+              <Stat icon="target" label="Estimated 5 years" value={`${data.market.aggregate.est5yrPct > 0 ? "+" : ""}${data.market.aggregate.est5yrPct}%`} note="Interpolated estimate, not a BLS figure" />
+              <Stat icon="layers" label="Median pay, 2025" value={`$${data.market.aggregate.medianPayLow.toLocaleString("en-US")}${data.market.aggregate.medianPayHigh !== data.market.aggregate.medianPayLow ? ` to $${data.market.aggregate.medianPayHigh.toLocaleString("en-US")}` : ""}`} note="Across example roles" />
+            </div>
+            <Collapse title="See roles, routes and skills" hint="BLS roles, catalog routes, difficulty, AI analysis">
+              <MarketPanel data={data} aiIds={[major]} compact />
+            </Collapse>
+          </>
+        ) : <p><span className="spin" aria-hidden /> Loading…</p>}
+      </section>
       <div className="row"><Link className="btn" href="/next">Next steps</Link><Link className="btn btn-ghost" href={`/compare?a=${major}`}>Compare with another major</Link><Link className="btn btn-ghost" href="/chat">Ask the assistant</Link></div>
     </div>
   );
