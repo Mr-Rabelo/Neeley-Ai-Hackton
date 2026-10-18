@@ -57,6 +57,7 @@ npm test                       # 66 tests
 ```
 
 Without `ANTHROPIC_API_KEY` the app still reads transcripts (rule-based), plans, compares, shows market data and the catalog. The AI features say so plainly instead of failing.
+| `ANTHROPIC_WORKSPACE_ID` | Only if Anthropic reports the key "is not scoped to a workspace". Sent as the `anthropic-workspace-id` header |
 
 ### Environment
 | Variable | Needed for |

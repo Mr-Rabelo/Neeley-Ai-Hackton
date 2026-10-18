@@ -7,10 +7,20 @@ export function hasAnthropicKey(): boolean {
   return !!process.env.ANTHROPIC_API_KEY;
 }
 
+/**
+ * Keys that are not scoped to a workspace must say which workspace to use. Set ANTHROPIC_WORKSPACE_ID
+ * (the wrkspc_... ID from the Anthropic Console) to send the anthropic-workspace-id header on every request.
+ * Not needed when the key was created inside a workspace.
+ */
+export function anthropicHeaders(): Record<string, string> {
+  const id = process.env.ANTHROPIC_WORKSPACE_ID?.trim();
+  return id ? { "anthropic-workspace-id": id } : {};
+}
+
 let _client: Anthropic | null = null;
 export function anthropic(): Anthropic {
   if (!process.env.ANTHROPIC_API_KEY) throw new AiUnavailableError();
-  _client ??= new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  _client ??= new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, defaultHeaders: anthropicHeaders() });
   return _client;
 }
 
