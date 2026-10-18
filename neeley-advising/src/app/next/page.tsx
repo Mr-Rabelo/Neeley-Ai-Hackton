@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useStudent } from "@/components/StudentContext";
 import { Card } from "@/components/Bits";
 import { ApiError, postJson } from "@/lib/client";
+import { rememberRequest } from "@/lib/my-requests";
 import { describeCorrections, hasCorrections, hasGoals } from "@/lib/corrections";
 
 const SCHED = process.env.NEXT_PUBLIC_ADVISOR_SCHEDULING_URL;
@@ -25,7 +26,8 @@ function Inner() {
         const r = await postJson<{ message: string; saved: boolean }>("/api/apply-mock", { name: f.name, email: f.email, term: f.term, program: f.program || "Undecided", note: f.note, consent: f.consent });
         setMsg(`${r.message} ${r.saved ? "Your answers were saved because you agreed." : "Nothing was saved."}`);
       } else {
-        const r = await postJson<{ message: string }>("/api/advisor-request", { type: f.type, name: f.name, email: f.email || undefined, phone: f.phone || undefined, preferredTime: f.time, topic: f.topic, consent: f.consent, record: f.type === "review" ? (originalRecord ?? record) : undefined, context: f.type === "review" && originalRecord && (hasCorrections(corrections) || hasGoals(goals)) ? { goals: hasGoals(goals) ? { ...goals } : undefined, corrections: hasCorrections(corrections) ? { ...corrections } : undefined, correctionNotes: hasCorrections(corrections) ? describeCorrections(originalRecord, corrections) : undefined } : undefined });
+        const r = await postJson<{ message: string; id?: string }>("/api/advisor-request", { type: f.type, name: f.name, email: f.email || undefined, phone: f.phone || undefined, preferredTime: f.time, topic: f.topic, consent: f.consent, record: f.type === "review" ? (originalRecord ?? record) : undefined, context: f.type === "review" && originalRecord && (hasCorrections(corrections) || hasGoals(goals)) ? { goals: hasGoals(goals) ? { ...goals } : undefined, corrections: hasCorrections(corrections) ? { ...corrections } : undefined, correctionNotes: hasCorrections(corrections) ? describeCorrections(originalRecord, corrections) : undefined } : undefined });
+        if (r.id) rememberRequest(r.id);
         setMsg(r.message);
       }
     } catch (e) { setErr(e instanceof ApiError ? e.message : "Something went wrong."); } finally { setBusy(false); }

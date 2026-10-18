@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { postJson } from "@/lib/client";
+import { rememberRequest } from "@/lib/my-requests";
 
 export function ChallengeButton({ id, message }: { id: string; message: string }) {
   const [open, setOpen] = useState(false);
@@ -13,7 +14,8 @@ export function ChallengeButton({ id, message }: { id: string; message: string }
   async function send() {
     setBusy(true); setErr(null);
     try {
-      await postJson("/api/challenge", { findingId: id, finding: message, note, consent: true });
+      const r = await postJson<{ id: string }>("/api/challenge", { findingId: id, finding: message, note, consent: true });
+      rememberRequest(r.id);
       setOk(true);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Could not send.");

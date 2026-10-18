@@ -17,6 +17,7 @@ const TABS = [
   { href: "/student/corrections", label: "Corrections" },
   { href: "/student/map", label: "Requirements map" },
   { href: "/student/samples", label: "Sample students" },
+  { href: "/student/requests", label: "My requests" },
   { href: "/student/chat", label: "Ask the AI" },
 ];
 
@@ -28,7 +29,7 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
     <div className="wrap stack-lg">
       <nav className="tabs" aria-label="Student sections">
         {TABS.map((t) => {
-          const isLocked = locked && t.href !== "/student" && t.href !== "/student/samples" && t.href !== "/student/map";
+          const isLocked = locked && t.href !== "/student" && t.href !== "/student/samples" && t.href !== "/student/map" && t.href !== "/student/requests";
           return (
             <Link key={t.href} href={t.href} className={`tab${isLocked ? " locked" : ""}`} aria-selected={path === t.href} title={isLocked ? "Load a transcript to unlock this section" : undefined} style={{ textDecoration: "none" }}>
               {isLocked && <span aria-hidden style={{ display: "inline-flex", marginRight: 6, verticalAlign: "-2px" }}><Icon name="lock" size={14} /></span>}{t.label}
