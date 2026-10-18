@@ -26,6 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <footer className="footer">
             <div className="wrap">
               Demo built on the TCU Undergraduate 2026-2027 Catalog and a sample student. Plans are drafts that no advisor has reviewed. Nothing here changes an official record or promises a job, a salary or admission.
+              <span style={{ display: "block", marginTop: 6 }}><a href="/validation">Validation</a> · <a href="/about">Project documents</a></span>
             </div>
           </footer>
           <FloatingAssistant />
