@@ -1,6 +1,5 @@
 import Link from "next/link";
-
-const PHONE = process.env.NEXT_PUBLIC_AI_PHONE_DISPLAY;
+import { VapiVoiceCall } from "@/components/VapiVoiceCall";
 
 export default function Landing() {
   return (
@@ -20,9 +19,8 @@ export default function Landing() {
             </div>
             <div className="card stack" style={{ flex: "1 1 340px", maxWidth: 520, padding: 32 }}>
               <h3 style={{ fontSize: 26 }}>Prefer to talk?</h3>
-              <p className="small">Call the Neeley AI assistant. It can talk about majors, courses and careers, and set up an advisor call-back.</p>
-              {PHONE ? <a href={`tel:${PHONE.replace(/[^+\d]/g, "")}`} style={{ fontSize: 30, fontWeight: 600, color: "var(--fg)" }}>{PHONE}</a> : <div style={{ fontSize: 24, fontWeight: 600 }}>[AI assistant number]</div>}
-              <p className="small">{PHONE ? "Calls are with an AI. It cannot see your record." : "Set NEXT_PUBLIC_AI_PHONE_DISPLAY once the Twilio number is live."}</p>
+              <p className="small">Talk with the Neeley AI assistant by voice in your browser. It can discuss majors, courses and careers, and request an advisor call-back. It cannot see your student record.</p>
+              <VapiVoiceCall />
             </div>
           </div>
           <div className="row small"><span style={{ width: 1, height: 40, background: "var(--line-strong)", display: "inline-block" }} aria-hidden /> Scroll to see what Neeley stands for</div>

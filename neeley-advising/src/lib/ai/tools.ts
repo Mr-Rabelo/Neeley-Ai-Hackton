@@ -17,7 +17,7 @@ export type Mode = "student" | "prospect" | "voice";
 export interface ToolContext {
   mode: Mode;
   record?: StudentRecord;
-  callerPhone?: string; // from Twilio, voice only
+  callerPhone?: string; // optional caller ID for phone channels
   pendingOptions: { question: string; options: { id: string; label: string }[] }[];
   toolSources: Set<string>; // source ids seen in tool results
   toolCourseCodes: Set<string>; // course codes that appeared in tool results

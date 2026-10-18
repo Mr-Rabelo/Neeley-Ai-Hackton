@@ -127,7 +127,7 @@ describe("chat loop", () => {
     const names = calls[0].tools!.map((t) => t.name);
     expect(names).not.toContain("get_plan");
     expect(names).not.toContain("create_advisor_packet");
-    expect(calls[0].system).toMatch(/PHONE CALL/);
+    expect(calls[0].system).toMatch(/BROWSER VOICE CONVERSATION/);
   });
 });
 

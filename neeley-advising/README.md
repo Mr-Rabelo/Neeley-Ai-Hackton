@@ -40,7 +40,7 @@ A web app for TCU Neeley School of Business built for the *Graduation Blueprint*
 | Recommendations | `/api/recommend` | Explains next-term courses and optional electives from the engine's plan | Add a course that is not in the catalog or plan |
 | Chat | `/api/chat` | Student mode (tools: plan, requirements, what-ifs, courses, market, advisor packet) and prospect mode (one question at a time with clickable chips, fit scoring) | Compute eligibility, approve anything |
 | Job market | `/api/market/analysis` | Writes a 3-5 year outlook from BLS data only | Add numbers that are not in the data |
-| Voice | `/api/voice/*` | Same brain, spoken style, prospect-level only | See anyone's record |
+| Voice | Vapi browser calls + `/api/vapi/tools` | Same advising logic, spoken style, prospect-level only | See anyone's record |
 
 Every reply is verified against what the tools returned. Problems trigger one rewrite, then a visible caution.
 
@@ -63,25 +63,49 @@ Without `ANTHROPIC_API_KEY` the app still reads transcripts (rule-based), plans,
 |---|---|
 | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `ANTHROPIC_FAST_MODEL` | Claude features (defaults: `claude-sonnet-5-5`, `claude-haiku-5-5`) |
 | `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Persisting advisor requests, feedback, survey, voice conversations (otherwise in memory) |
-| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, `ADVISOR_PHONE_NUMBER`, `APP_BASE_URL` | Voice and SMS |
+| `NEXT_PUBLIC_VAPI_PUBLIC_KEY`, `NEXT_PUBLIC_VAPI_ASSISTANT_ID` | Browser voice calls (public values; Vapi allows these in the browser) |
+| `VAPI_SERVER_SECRET` | Authenticates Vapi's server-to-server custom tool requests; never expose it in client code |
+| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, `APP_BASE_URL` | Optional SMS link only; Twilio no longer handles voice |
 | `ADVISOR_PASSCODE` | Required to open `/advisor` in production |
-| `NEXT_PUBLIC_AI_PHONE_DISPLAY`, `NEXT_PUBLIC_ADVISOR_SCHEDULING_URL` | Display values |
+| `NEXT_PUBLIC_ADVISOR_SCHEDULING_URL` | Display value |
 
 Never commit real values. `.env.example` holds names only.
 
 ### Supabase
 The schema is `supabase/migrations/0001_init.sql` (already applied to the *Neeley Ai - Hackton* project). Row-level security is on with **no public policies**: only the server's service role key can read or write.
 
-### Twilio voice
-1. Buy a number. Set its **Voice webhook (POST)** to `https://<your-app>/api/voice/incoming`.
-2. Set `TWILIO_AUTH_TOKEN`, `APP_BASE_URL` (the public URL, used to validate signatures), optionally `ADVISOR_PHONE_NUMBER` for "talk to a person" transfers and `TWILIO_ACCOUNT_SID`/`TWILIO_PHONE_NUMBER` for texting a link.
-3. Every webhook is signature-validated; forged requests get 403. The caller is not verified, so voice is general information only.
-4. Conversation state is stored by `CallSid` in Supabase when configured. Without Supabase it is kept in server memory, which is not reliable on serverless.
-5. This uses Twilio's speech `<Gather>` loop, which works on Vercel. A lower-latency upgrade is Twilio ConversationRelay, which needs a small always-on websocket server.
-6. A Twilio trial account only calls verified numbers.
+### Vapi browser voice
+The home page uses Vapi's web SDK for browser microphone calls. Vapi handles speech and voice; the secured custom function below sends Neeley questions to the app's existing advising engine and Claude tool loop. Calls are unauthenticated and can only access general information, not student records.
+
+1. In Vapi, create or select an assistant. Set its first message to disclose that it is an AI and can only provide general advising information. In its system prompt, tell it to call `neeley_advising_answer` for Neeley-specific questions and to rely only on that tool result for facts about programs, courses, careers, or policies.
+2. Create a **Public API Key** in Vapi. Restrict it to the assistant you selected and the website origins where the app will run (production, plus any development preview origins you use). Copy the key and the assistant ID.
+3. In **Replit Secrets**, add `NEXT_PUBLIC_VAPI_PUBLIC_KEY` and `NEXT_PUBLIC_VAPI_ASSISTANT_ID`. In Vercel, add the same names under the project's Environment Variables for the environments you deploy, then redeploy. These are browser values: the public key is intended to be visible to the web SDK. Do not use a Vapi private API key here; the browser call does not need one.
+4. Create a long random shared secret. Add it as `VAPI_SERVER_SECRET` in Replit Secrets and as a server-side Environment Variable in Vercel. In Vapi, create a custom credential that sends that exact secret in an `x-vapi-secret` header, without a Bearer prefix.
+5. Create a Vapi **Function** tool named `neeley_advising_answer`, with a required string argument called `question`. Configure its server URL as `https://<your-vercel-domain>/api/vapi/tools`, select the custom credential from step 4, and attach the tool to the assistant. The tool request is authenticated before the app runs its existing advising logic.
+6. Confirm the assistant has recording disabled unless your privacy and consent requirements permit recording. Conversation messages handled by the app are saved in the existing Supabase `conversations` table when Supabase is configured.
+
+For the function's argument schema, use:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "question": {
+      "type": "string",
+      "description": "The caller's full Neeley advising question, including context from the current voice conversation."
+    }
+  },
+  "required": ["question"]
+}
+```
+
+The shared secret is not a Vapi API key. It is a separate password used only between Vapi and this app's server. Never paste it into chat, source code, or a `NEXT_PUBLIC_` variable.
+
+### Optional Twilio SMS
+Twilio is retained only for the existing "text me the sign-in link" action. It requires `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, and `APP_BASE_URL`. The voice assistant asks for a number and clear consent before sending a text; if SMS is not configured, it tells the caller it could not send the message.
 
 ### Deploy (Vercel)
-Import the repo, framework preset *Next.js*, add the environment variables above. The `data/` folder is traced into the serverless functions.
+The project is already connected to Vercel. Add only the new Vapi variables to its existing Environment Variables, keep the current Supabase and other settings, then redeploy. The `data/` folder is traced into the serverless functions.
 
 ## Data pipeline (`scripts/`)
 - `build_catalog.py`: parses the 2,791-page catalog PDF into `data/catalog/courses.json` (about 3,900 courses with descriptions, prerequisites and typical offerings). Catalog pages list each page's course headers first and the descriptions after, so pairing is done **per page** to avoid drift; four mismatched pages (graduate courses) are logged.
@@ -92,7 +116,7 @@ Import the repo, framework preset *Next.js*, add the environment variables above
 Rebuild the catalog with `python3 -m venv .venv && .venv/bin/pip install pypdf && .venv/bin/python scripts/build_catalog.py "<Undergrad Catalog.pdf>"`.
 
 ## Tests (`tests/`)
-Transcript parsing (text and PDF), prerequisite parsing, availability labels, the engine on the sample student, **mutation tests** (change one fact, expect the right finding), alternatives and comparison, market data, the AI layer with a scripted fake model (tool loop, verifier, profile validation, extraction cross-check), and the Twilio webhooks with real signature validation.
+Transcript parsing (text and PDF), prerequisite parsing, availability labels, the engine on the sample student, **mutation tests** (change one fact, expect the right finding), alternatives and comparison, market data, the AI layer with a scripted fake model (tool loop, verifier, profile validation, extraction cross-check), and Vapi tool-endpoint authentication and payload handling.
 
 ## Known limits
 - No live schedule, so **no meeting-time conflict or seat checks**; the app says so everywhere it matters.
