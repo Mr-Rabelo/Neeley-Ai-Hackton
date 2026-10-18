@@ -29,6 +29,8 @@ interface Ctx {
   loadSample: () => Promise<void>;
   loadFile: (f: File) => Promise<void>;
   loadText: (t: string) => Promise<void>;
+  /** Load an already-parsed record (the fictional sample students). */
+  loadRecord: (r: StudentRecord, note: string) => Promise<void>;
   refreshProfile: () => Promise<void>;
   clear: () => void;
 }
@@ -130,6 +132,7 @@ export function StudentProvider({ children }: { children: ReactNode }) {
     setGoals: (g) => { setGoalsState(g); saveExtras(corrections, g); },
     profile, extraction, loading, profiling, error, ready,
     loadSample: () => wrap(() => postJson("/api/transcript", { sample: true })),
+    loadRecord: (r, note) => wrap(async () => ({ record: r, extraction: { method: "sample", agreed: true, discrepancies: [], notes: [note] } })),
     loadText: (text) => wrap(() => postJson("/api/transcript", { text })),
     loadFile: (file) => wrap(async () => {
       const fd = new FormData();
