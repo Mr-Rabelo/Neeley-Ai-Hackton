@@ -1,14 +1,14 @@
 # Agent Instructions
 
 ## Project
-Neeley Advising is a Next.js app for TCU Neeley students. It supports transcript intake, degree planning, career exploration, advisor handoffs, and related advising workflows.
+Neeley Advising is a Next.js app for TCU Neeley students. It supports transcript intake, degree planning, career exploration, advisor handoffs, and related advising workflows. Supabase and Vercel are already configured for this project; inspect and preserve the existing setup rather than configuring from scratch. Never expose or copy secret values.
 
 ## Setup and checks
 - Install dependencies with `npm install`.
 - Run the test suite with `npm test`.
 - Run TypeScript checks with `npm run typecheck`.
 - Verify production compilation with `npm run build`.
-- Copy `.env.example` to `.env.local` for local configuration; never commit `.env.local` or secret values.
+- Copy `.env.example` to `.env.local` for local configuration only if needed; never commit `.env.local` or secret values.
 
 ## Architecture and correctness
 - Treat the deterministic planning engine in `src/lib/engine` as the authority for prerequisites, eligibility, credits, terms, delays, and plan comparisons. Do not have an LLM calculate or override those results.
