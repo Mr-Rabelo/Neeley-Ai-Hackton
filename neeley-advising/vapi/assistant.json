@@ -1,0 +1,351 @@
+{
+  "_note": "Vapi assistant settings for the Neeley Advising voice call. The system prompt is vapi/system-prompt.md. `tools` is generated from the app's voice tools (WRITE_VAPI_CONFIG=1 npx vitest run tests/vapi-config.test.ts); edit toolSettings and the call settings by hand. Push to Vapi with `npm run vapi:sync`.",
+  "name": "Neeley Advising",
+  "firstMessage": "Hi, thanks for calling Neeley Advising at T-C-U. I'm an AI assistant, so I can share general information about the Neeley School of Business programs and help you think through which one might fit, but I can't see student records or make decisions for an advisor. Are you exploring Neeley, or are you a current T-C-U student?",
+  "firstMessageMode": "assistant-speaks-first",
+  "endCallMessage": "Thanks for calling Neeley Advising. Good luck, and goodbye!",
+  "maxDurationSeconds": 1200,
+  "model": {
+    "temperature": 0.3,
+    "maxTokens": 300
+  },
+  "toolSettings": {
+    "list_education_options": {
+      "requestStart": "Let me pull up Neeley's programs.",
+      "timeoutSeconds": 20
+    },
+    "get_program_details": {
+      "requestStart": "Let me pull up the details on that program.",
+      "timeoutSeconds": 20
+    },
+    "fit_programs": {
+      "requestStart": "Thanks. Let me see which programs line up with what you told me.",
+      "timeoutSeconds": 20
+    },
+    "get_market_info": {
+      "requestStart": "Let me check the job market numbers.",
+      "timeoutSeconds": 20
+    },
+    "get_course": {
+      "requestStart": "Let me look up that course.",
+      "timeoutSeconds": 20
+    },
+    "search_courses": {
+      "requestStart": "Let me search the catalog.",
+      "timeoutSeconds": 20
+    },
+    "list_programs": {
+      "requestStart": "One moment.",
+      "timeoutSeconds": 20
+    },
+    "sample_plan": {
+      "requestStart": "Let me build a sample four-year plan. This takes a few seconds.",
+      "timeoutSeconds": 30
+    },
+    "request_advisor_callback": {
+      "requestStart": "I'm saving your call-back request now.",
+      "timeoutSeconds": 20
+    },
+    "send_text_link": {
+      "requestStart": "Sending that text now.",
+      "timeoutSeconds": 20
+    },
+    "neeley_advising_answer": {
+      "requestStart": "Good question. Let me check that for you, it may take a few seconds.",
+      "timeoutSeconds": 90
+    }
+  },
+  "tools": [
+    {
+      "name": "list_education_options",
+      "description": "Overview of every Neeley School of Business undergraduate option: what all students study (lower-division and business core), each major's skills, where it leads, demand outlook and example roles, the minors, the rules for getting into a major, degree rules, and what the data does not cover (tuition, scholarships, schedules). Call this when someone asks what programs or education options TCU Neeley offers.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "get_program_details",
+      "description": "Everything about one Neeley major or minor: required courses, choice requirements, skills, where it leads (from the catalog), BLS job market figures, a structure-based difficulty estimate and a draft profile of who it tends to suit. Call this before describing a program's courses, benefits or careers, and once per program when comparing two.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "programId": {
+            "type": "string",
+            "enum": [
+              "accounting",
+              "bis",
+              "entrepreneurship",
+              "finance",
+              "finance-re",
+              "management",
+              "marketing",
+              "scm",
+              "accounting-minor",
+              "finance-minor",
+              "global-business-minor"
+            ]
+          }
+        },
+        "required": [
+          "programId"
+        ]
+      }
+    },
+    {
+      "name": "fit_programs",
+      "description": "Rank Neeley majors against what the prospective student has said so far. Pass every answer collected. Returns the top 3 with plain reasons and a confidence score; low confidence means ask more questions instead of recommending.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "interests": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "technology",
+                "people",
+                "money",
+                "creativity",
+                "building",
+                "helping",
+                "business",
+                "data"
+              ]
+            }
+          },
+          "strengths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "math",
+                "writing",
+                "speaking",
+                "science",
+                "art",
+                "leading"
+              ]
+            }
+          },
+          "quant": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "communication": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "people": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "1 = analysis, 5 = people"
+          },
+          "creative": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "1 = structured, 5 = creative"
+          },
+          "leadership": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "careers": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "data",
+                "banking",
+                "consulting",
+                "startups",
+                "brand",
+                "operations",
+                "sales",
+                "real-estate",
+                "technology"
+              ]
+            }
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "income",
+                "stability",
+                "impact",
+                "flexibility",
+                "growth"
+              ]
+            }
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_market_info",
+      "description": "Job market information for a Neeley major from the U.S. Bureau of Labor Statistics: median pay, projected growth (10-year, with interpolated 3 and 5 year estimates), openings, routes from the catalog, skills, a structure-based difficulty estimate. Present as possibilities, never guarantees.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "majorId": {
+            "type": "string",
+            "enum": [
+              "accounting",
+              "bis",
+              "entrepreneurship",
+              "finance",
+              "finance-re",
+              "management",
+              "marketing",
+              "scm"
+            ]
+          }
+        },
+        "required": [
+          "majorId"
+        ]
+      }
+    },
+    {
+      "name": "get_course",
+      "description": "Look up one catalog course: description, prerequisites (as written and parsed), typical offering with its confidence label, what it unlocks, which programs count it, and the student's own status.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "e.g. FINA 30153"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      }
+    },
+    {
+      "name": "search_courses",
+      "description": "Search the 2026-2027 undergraduate catalog by code prefix, title or description. Returns up to 8 matches.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "list_programs",
+      "description": "List Neeley majors and minors with ids and catalog pages.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "sample_plan",
+      "description": "Build a sample four-year plan for a major as if the student starts from zero (default start Fall 2027). Labeled as a sample.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "majorId": {
+            "type": "string",
+            "enum": [
+              "accounting",
+              "bis",
+              "entrepreneurship",
+              "finance",
+              "finance-re",
+              "management",
+              "marketing",
+              "scm"
+            ]
+          },
+          "startTermId": {
+            "type": "string",
+            "description": "e.g. 2027-Fall"
+          }
+        },
+        "required": [
+          "majorId"
+        ]
+      }
+    },
+    {
+      "name": "request_advisor_callback",
+      "description": "Save a request for an advisor to call or meet the person. Only after they gave a name, a phone number and said yes to being contacted.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "preferredTime": {
+            "type": "string"
+          },
+          "topic": {
+            "type": "string"
+          },
+          "consent": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "topic",
+          "consent"
+        ]
+      }
+    },
+    {
+      "name": "send_text_link",
+      "description": "Text the caller a link to the Neeley advising website so they can sign in and see their own plan. Only after they say yes. Uses the number they are calling from unless they give another.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string"
+          },
+          "consent": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "consent"
+        ]
+      }
+    },
+    {
+      "name": "neeley_advising_answer",
+      "description": "Ask the Neeley advising engine an open-ended question that the other tools do not answer directly, such as a policy, a requirement rule or a multi-part question. Slower than the other tools. Returns a checked, spoken-style answer.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "The caller's full Neeley advising question, including context from the current voice conversation."
+          }
+        },
+        "required": [
+          "question"
+        ]
+      }
+    }
+  ]
+}

@@ -1,12 +1,12 @@
 import type { Tool } from "@anthropic-ai/sdk/resources/messages";
 import type { PlanResult, StudentRecord } from "../types";
-import { creditsFor, getCourse, getProgram, majors, minors, neeley, normCode, prettyCode, searchCourses, titleOf } from "../catalog";
+import { creditsFor, getCourse, getProgram, majors, minors, neeley, normCode, policy, prettyCode, searchCourses, titleOf } from "../catalog";
 import { availabilityFromCatalog, describeAvailability } from "../availability";
 import { describeExpr, exprCodes, ruleFor } from "../prereq";
 import { addMinorAlternative, baselineAlternative, careerAlternative, changeMajorAlternative, compare, summerAlternative, type Alternative } from "../engine/alternatives";
 import { buildPlan } from "../engine/plan";
-import { fitPrograms, type SurveyAnswers } from "../fit";
-import { marketSummaryForAI, difficultyFor } from "../market";
+import { fitPrograms, programProfile, type SurveyAnswers } from "../fit";
+import { marketForMajor, marketSummaryForAI, difficultyFor } from "../market";
 import { buildPacket } from "../packet";
 import { saveRow } from "../store";
 import { plansToMajorIds } from "../transcript";
@@ -159,6 +159,98 @@ export function prospectRecord(startTermId = "2027-Fall", majorName = ""): Stude
   };
 }
 
+// ---------- program overviews (voice and prospect conversations) ----------
+// Paraphrased from the Neeley School department pages (S2), the same text the home page shows.
+const SCHOOL_HIGHLIGHTS = [
+  "A broad base: humanities, social sciences, natural sciences, mathematics, economics and business are studied together, so a business degree rests on a liberal-arts foundation.",
+  "Every business fundamental: all students learn accounting, information systems, entrepreneurship and innovation, finance, management, marketing, and supply and value chain management, then concentrate in one.",
+  "Ties to the business community: corporate partners contribute internships, jobs, scholarships, classroom speakers and mentors. The school is accredited by AACSB International.",
+];
+
+const NOT_IN_DATA =
+  "Tuition, scholarships, financial aid, admission odds, application deadlines, class schedules, meeting times and seat counts are not in this data. Do not guess them; refer the person to TCU Admissions or the Neeley Academic Advising Center.";
+
+const withTitle = (code: string) => `${prettyCode(code)} ${titleOf(code)}`;
+const pageTag = (sourceId: string | null | undefined, page?: number | null) => (sourceId ? `${sourceId}${page ? ` p.${page}` : ""}` : "not sourced");
+
+/** Every Neeley program in one compact answer: what all students share, each major's focus and outlook, the minors and the entry rules. */
+export function educationOptions() {
+  const n = neeley();
+  return {
+    school: { name: "TCU Neeley School of Business", degree: "Bachelor of Business Administration (BBA)", highlights: SCHOOL_HIGHLIGHTS, source: "S2" },
+    sharedFoundation: {
+      summary: "Every Neeley student takes the same lower-division courses and business core before concentrating in a major.",
+      lowerDivision: [...n.lowerDivision.required, ...n.lowerDivision.beforeDeclaringMajor].map(withTitle),
+      businessCore: n.businessCore.courses.map((c) => withTitle(c.code)),
+      source: pageTag(n.businessCore.sourceId, n.businessCore.page),
+    },
+    majors: majors().map((m) => {
+      const mk = marketForMajor(m.id);
+      return {
+        id: m.id,
+        name: m.name,
+        majorHours: m.totalHours,
+        skills: mk?.skills.slice(0, 4).map((s) => s.skill) ?? [],
+        whereItLeads: mk?.routes ?? [],
+        demandOutlook: mk ? `${mk.outlookLabel} (BLS ${mk.period} projection for related occupations)` : "not available",
+        exampleRoles: mk?.occupations.map((o) => o.title) ?? [],
+        source: pageTag(m.sourceId, m.page),
+      };
+    }),
+    minors: minors().map((m) => ({ id: m.id, name: m.name, hours: m.totalHours, openTo: m.forMajors ? `${m.forMajors} majors` : "not stated", minGpa: m.minGpa, notes: m.notes, source: pageTag(m.sourceId, m.page) })),
+    gettingIn: ["first-year", "advance-gpa", "internal-transfer"].map((id) => policy(id)).filter((p) => !!p).map((p) => ({ rule: p!.text, source: pageTag(p!.sourceId, p!.page) })),
+    degreeRules: n.policies.filter((p) => !["first-year", "advance-gpa", "internal-transfer"].includes(p.id)).map((p) => ({ rule: p.text, source: pageTag(p.sourceId, p.page) })),
+    notInData: NOT_IN_DATA,
+  };
+}
+
+const PROFILE_WORDS: Record<string, string> = {
+  technology: "technology", people: "working with people", money: "money and markets", creativity: "creative work", building: "building things", helping: "helping others", business: "running a business", data: "data and puzzles",
+  math: "math", writing: "writing", speaking: "speaking", science: "science", art: "art and design", leading: "leading a team",
+  banking: "banking and investing", consulting: "consulting", startups: "startups", brand: "brand and advertising", operations: "operations and logistics", sales: "sales", "real-estate": "real estate",
+  income: "income", stability: "stability", impact: "making an impact", flexibility: "flexibility", growth: "growth and learning",
+};
+
+/** One program in depth: what you study, skills, where it leads, the job market and who it tends to suit. */
+export function programDetails(id: string) {
+  const p = getProgram(id);
+  if (!p) return { error: `Unknown program ${id}. Call list_education_options for the valid ids.` };
+  const isMajor = majors().some((m) => m.id === id);
+  const mk = isMajor ? marketForMajor(id) : null;
+  const market = isMajor ? marketSummaryForAI(id) : null;
+  const d = isMajor ? difficultyFor(id) : null;
+  const prof = programProfile(id);
+  return {
+    id: p.id,
+    name: p.name,
+    kind: isMajor ? "major" : "minor",
+    degree: p.degree ?? (isMajor ? "BBA" : undefined),
+    catalogHours: p.totalHours,
+    requiredCourses: p.required.map((r) => ({ course: withTitle(r.code), credits: r.credits ?? creditsFor(r.code), associatedRequirement: !!r.associated })),
+    choiceRequirements: p.groups.map((g) => ({ requirement: g.label, hours: g.hours, examples: g.from.slice(0, 5).map(withTitle), note: g.note ?? g.followUp })),
+    writingEmphasisHours: p.writingEmphasisHours,
+    notes: p.notes,
+    minGpa: p.minGpa,
+    openTo: p.forMajors ? `${p.forMajors} majors` : undefined,
+    advisorRequired: !!p.advisorRequired,
+    skills: mk?.skills.map((s) => s.skill),
+    whereItLeads: mk?.routes,
+    jobMarket: market ?? undefined,
+    difficulty: d ? { label: d.label, note: d.note, method: d.method } : undefined,
+    tendsToSuit: prof
+      ? {
+          interests: prof.interests.map((x) => PROFILE_WORDS[x] ?? x),
+          strengths: prof.strengths.map((x) => PROFILE_WORDS[x] ?? x),
+          workYouMightPicture: prof.careers.map((x) => PROFILE_WORDS[x] ?? x),
+          values: prof.values.map((x) => PROFILE_WORDS[x] ?? x),
+          caution: "Draft profile built from catalog descriptions, not reviewed by advisors. Offer it as a way to think about fit, not a rule.",
+        }
+      : undefined,
+    notInData: NOT_IN_DATA,
+    source: pageTag(p.sourceId, p.page),
+  };
+}
+
 // ---------- tool definitions ----------
 const T = (name: string, description: string, properties: Record<string, unknown>, required: string[] = []): Tool => ({
   name,
@@ -201,6 +293,17 @@ const MARKET = T(
   ["majorId"],
 );
 const LIST = T("list_programs", "List Neeley majors and minors with ids and catalog pages.", {});
+const EDUCATION_OPTIONS = T(
+  "list_education_options",
+  "Overview of every Neeley School of Business undergraduate option: what all students study (lower-division and business core), each major's skills, where it leads, demand outlook and example roles, the minors, the rules for getting into a major, degree rules, and what the data does not cover (tuition, scholarships, schedules). Call this when someone asks what programs or education options TCU Neeley offers.",
+  {},
+);
+const PROGRAM_DETAILS = T(
+  "get_program_details",
+  "Everything about one Neeley major or minor: required courses, choice requirements, skills, where it leads (from the catalog), BLS job market figures, a structure-based difficulty estimate and a draft profile of who it tends to suit. Call this before describing a program's courses, benefits or careers, and once per program when comparing two.",
+  { programId: { type: "string", enum: [...majorIds, ...minorIds] } },
+  ["programId"],
+);
 const OPTIONS = T(
   "offer_options",
   "Show the user clickable option chips for your next question (4 to 6 options). Use this for every question you ask a prospective student, then stop and wait for their pick.",
@@ -245,7 +348,7 @@ const TEXT_LINK = T(
 
 export function toolsFor(mode: Mode): Tool[] {
   if (mode === "student") return [GET_PLAN, GET_REQS, COMPARE, GET_COURSE, SEARCH, MARKET, LIST, PACKET, OPTIONS];
-  if (mode === "voice") return [FIT, MARKET, GET_COURSE, SEARCH, LIST, SAMPLE, CALLBACK, TEXT_LINK];
+  if (mode === "voice") return [EDUCATION_OPTIONS, PROGRAM_DETAILS, FIT, MARKET, GET_COURSE, SEARCH, LIST, SAMPLE, CALLBACK, TEXT_LINK];
   return [FIT, MARKET, GET_COURSE, SEARCH, LIST, SAMPLE, OPTIONS, CALLBACK];
 }
 
@@ -323,6 +426,10 @@ async function run(name: string, input: Record<string, unknown>, ctx: ToolContex
     }
     case "list_programs":
       return { majors: majors().map((m) => ({ id: m.id, name: m.name, catalogPage: m.page })), minors: minors().map((m) => ({ id: m.id, name: m.name, catalogPage: m.page })) };
+    case "list_education_options":
+      return educationOptions();
+    case "get_program_details":
+      return programDetails(String(input.programId ?? ""));
     case "offer_options": {
       const options = (input.options as { id: string; label: string }[]) ?? [];
       ctx.pendingOptions.push({ question: String(input.question ?? ""), options });

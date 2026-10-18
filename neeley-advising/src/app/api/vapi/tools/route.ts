@@ -2,7 +2,9 @@ import { timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { json, llmOrNull } from "@/lib/api";
 import { runChat, type ChatTurn } from "@/lib/ai/chat";
+import { executeTool, newContext } from "@/lib/ai/tools";
 import { getState, putState } from "@/lib/store";
+import { VAPI_ANSWER_TOOL, vapiDirectToolNames } from "@/lib/vapi";
 
 export const maxDuration = 120;
 export const runtime = "nodejs";
@@ -23,6 +25,7 @@ const messageSchema = z.object({
 const bodySchema = z.object({ message: messageSchema });
 const questionSchema = z.object({ question: z.string().trim().min(1).max(4000) }).strict();
 const turnSchema = z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(4000) });
+const directArgsSchema = z.record(z.string(), z.unknown());
 
 function validCredential(received: string | null, expected: string): boolean {
   if (!received) return false;
@@ -60,14 +63,25 @@ export async function POST(req: Request) {
 
   const llm = llmOrNull();
   const callId = `vapi:${parsed.data.message.call.id}`;
-  const saved = await getState("conversations", callId);
+  const direct = vapiDirectToolNames();
+  const needsHistory = parsed.data.message.toolCallList.some((t) => t.function.name === VAPI_ANSWER_TOOL);
+  const saved = needsHistory ? await getState("conversations", callId) : null;
   const history = z.array(turnSchema).safeParse(saved?.messages);
   let messages: ChatTurn[] = history.success ? history.data.slice(-12) : [];
 
   const results = [];
   for (const toolCall of parsed.data.message.toolCallList) {
     let result: string;
-    if (toolCall.function.name !== "neeley_advising_answer") {
+    if (direct.has(toolCall.function.name)) {
+      // Deterministic catalog, market and fit tools: no Claude call, so the voice turn stays fast.
+      const args = directArgsSchema.safeParse(parseArguments(toolCall.function.arguments ?? {}));
+      if (!args.success) {
+        result = "I couldn't read the tool arguments. Please try the request again.";
+      } else {
+        const out = await executeTool(toolCall.function.name, args.data, newContext("voice"));
+        result = JSON.stringify(out);
+      }
+    } else if (toolCall.function.name !== VAPI_ANSWER_TOOL) {
       result = "This Neeley advising tool is not available. Please ask the assistant to answer the question another way.";
     } else {
       const args = questionSchema.safeParse(parseArguments(toolCall.function.arguments));
@@ -89,7 +103,7 @@ export async function POST(req: Request) {
         }
       }
     }
-    results.push({ toolCallId: toolCall.id, result: result.slice(0, 12_000) });
+    results.push({ toolCallId: toolCall.id, result: result.slice(0, 16_000) });
   }
 
   return json({ results });

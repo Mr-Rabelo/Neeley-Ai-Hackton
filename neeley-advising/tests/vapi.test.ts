@@ -46,4 +46,24 @@ describe("Vapi custom tool endpoint", () => {
     expect(body.results[0].toolCallId).toBe("tool-test");
     expect(body.results[0].result).toMatch(/unavailable/i);
   });
+
+  it("answers the data tools directly, without the AI service", async () => {
+    const res = await POST(request({
+      message: {
+        type: "tool-calls",
+        call: { id: "call-direct" },
+        toolCallList: [
+          { id: "t1", type: "function", function: { name: "list_education_options", arguments: {} } },
+          { id: "t2", type: "function", function: { name: "get_program_details", arguments: JSON.stringify({ programId: "marketing" }) } },
+          { id: "t3", type: "function", function: { name: "request_advisor_callback", arguments: { name: "Sam", topic: "Choosing a major", consent: false } } },
+        ],
+      },
+    }));
+    const body = await res.json();
+    expect(res.status).toBe(200);
+    const [options, details, callback] = body.results.map((r: { result: string }) => JSON.parse(r.result));
+    expect(options.majors).toHaveLength(8);
+    expect(details).toMatchObject({ id: "marketing", kind: "major" });
+    expect(callback.error).toMatch(/consent/i);
+  });
 });
