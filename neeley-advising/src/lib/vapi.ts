@@ -42,3 +42,42 @@ export function vapiFunctions(): VapiFunction[] {
 export function vapiDirectToolNames(): Set<string> {
   return new Set(toolsFor("voice").map((t) => t.name));
 }
+
+export interface NormalizedToolCall {
+  id: string;
+  function: { name: string; arguments: unknown };
+}
+
+const MAX_TOOL_CALLS = 5;
+
+/**
+ * Vapi describes the same tool calls in several shapes depending on the event version:
+ *   toolCallList:        [{ id, name, arguments }]                       (documented simplified shape)
+ *   toolCalls:           [{ id, type: "function", function: { name, arguments } }]  (OpenAI style)
+ *   toolWithToolCallList:[{ ..., toolCall: { id, type: "function", function: { name, arguments } } }]
+ * toolCallList entries may also use the OpenAI style. Accept all of them so a tool call is never rejected for its shape.
+ */
+export function normalizeToolCalls(body: unknown): { callId: string; toolCallList: NormalizedToolCall[] } | null {
+  const msg = (body as { message?: Record<string, unknown> } | null)?.message;
+  if (!msg || typeof msg !== "object" || msg.type !== "tool-calls") return null;
+  const out: NormalizedToolCall[] = [];
+  const seen = new Set<string>();
+  const add = (raw: unknown) => {
+    const t = raw as { id?: unknown; name?: unknown; arguments?: unknown; function?: { name?: unknown; arguments?: unknown }; toolCall?: unknown } | null;
+    if (!t || typeof t !== "object") return;
+    if (t.toolCall) return add(t.toolCall);
+    const id = typeof t.id === "string" ? t.id : "";
+    const name = typeof t.function?.name === "string" ? t.function.name : typeof t.name === "string" ? t.name : "";
+    if (!id || !name || id.length > 200 || name.length > 100 || seen.has(id)) return;
+    seen.add(id);
+    out.push({ id, function: { name, arguments: t.function ? t.function.arguments : t.arguments } });
+  };
+  for (const key of ["toolCallList", "toolCalls", "toolWithToolCallList"]) {
+    const list = msg[key];
+    if (Array.isArray(list)) list.forEach(add);
+  }
+  if (!out.length) return null;
+  const rawId = (msg.call as { id?: unknown } | undefined)?.id;
+  const callId = typeof rawId === "string" && rawId ? rawId.slice(0, 200) : `unknown-${out[0].id}`.slice(0, 200);
+  return { callId, toolCallList: out.slice(0, MAX_TOOL_CALLS) };
+}

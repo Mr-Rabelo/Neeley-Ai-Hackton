@@ -91,6 +91,10 @@ Setup:
 
 To configure the assistant by hand instead, paste `vapi/system-prompt.md` as the system prompt, use `firstMessage` from `vapi/assistant.json`, and create one Function tool per entry in its `tools` list with the server URL `https://<your-vercel-domain>/api/vapi/tools` and the credential from step 3.
 
+**Where the voice data comes from.** The data tools read the catalog, program and BLS market files that ship with the app (`data/`), so they work without Claude credits and without Supabase. Supabase stores only call-back requests, feedback, survey answers and the open-ended tool's conversation history. `/api/vapi/tools` accepts every tool-call shape Vapi sends (`toolCallList` as `{ id, name, arguments }`, OpenAI-style `toolCalls`, and `toolWithToolCallList`).
+
+**If the assistant says it cannot pull data:** (1) the assistant in Vapi does not have the tools yet: run `npm run vapi:sync`; (2) the tool's Server URL or the `x-vapi-secret` credential does not match `VAPI_SERVER_SECRET`: in Vapi's Call Logs, a 401 means the secret is wrong; (3) only `neeley_advising_answer` needs Claude, so low Anthropic credits affect that tool alone.
+
 The shared secret is not a Vapi API key. It is a separate password used only between Vapi and this app's server. Never paste it into chat, source code, or a `NEXT_PUBLIC_` variable.
 
 ### Optional Twilio SMS

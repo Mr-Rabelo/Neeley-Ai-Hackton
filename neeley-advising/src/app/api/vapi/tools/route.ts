@@ -4,25 +4,11 @@ import { json, llmOrNull } from "@/lib/api";
 import { runChat, type ChatTurn } from "@/lib/ai/chat";
 import { executeTool, newContext } from "@/lib/ai/tools";
 import { getState, putState } from "@/lib/store";
-import { VAPI_ANSWER_TOOL, vapiDirectToolNames } from "@/lib/vapi";
+import { VAPI_ANSWER_TOOL, normalizeToolCalls, vapiDirectToolNames } from "@/lib/vapi";
 
 export const maxDuration = 120;
 export const runtime = "nodejs";
 
-const messageSchema = z.object({
-  type: z.literal("tool-calls"),
-  call: z.object({ id: z.string().min(1).max(200) }),
-  toolCallList: z.array(z.object({
-    id: z.string().min(1).max(200),
-    type: z.literal("function"),
-    function: z.object({
-      name: z.string().min(1).max(100),
-      arguments: z.unknown(),
-    }),
-  })).min(1).max(5),
-});
-
-const bodySchema = z.object({ message: messageSchema });
 const questionSchema = z.object({ question: z.string().trim().min(1).max(4000) }).strict();
 const turnSchema = z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(4000) });
 const directArgsSchema = z.record(z.string(), z.unknown());
@@ -58,19 +44,19 @@ export async function POST(req: Request) {
     return json({ error: "Request body must be JSON." }, 400);
   }
 
-  const parsed = bodySchema.safeParse(body);
-  if (!parsed.success) return json({ error: "Invalid Vapi tool request." }, 400);
+  const parsed = normalizeToolCalls(body);
+  if (!parsed) return json({ error: "Invalid Vapi tool request." }, 400);
 
   const llm = llmOrNull();
-  const callId = `vapi:${parsed.data.message.call.id}`;
+  const callId = `vapi:${parsed.callId}`;
   const direct = vapiDirectToolNames();
-  const needsHistory = parsed.data.message.toolCallList.some((t) => t.function.name === VAPI_ANSWER_TOOL);
+  const needsHistory = parsed.toolCallList.some((t) => t.function.name === VAPI_ANSWER_TOOL);
   const saved = needsHistory ? await getState("conversations", callId) : null;
   const history = z.array(turnSchema).safeParse(saved?.messages);
   let messages: ChatTurn[] = history.success ? history.data.slice(-12) : [];
 
   const results = [];
-  for (const toolCall of parsed.data.message.toolCallList) {
+  for (const toolCall of parsed.toolCallList) {
     let result: string;
     if (direct.has(toolCall.function.name)) {
       // Deterministic catalog, market and fit tools: no Claude call, so the voice turn stays fast.
