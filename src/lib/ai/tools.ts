@@ -17,7 +17,7 @@ export type Mode = "student" | "prospect" | "voice";
 export interface ToolContext {
   mode: Mode;
   record?: StudentRecord;
-  callerPhone?: string; // from Twilio, voice only
+  callerPhone?: string; // only if the channel supplies one; browser voice does not
   pendingOptions: { question: string; options: { id: string; label: string }[] }[];
   toolSources: Set<string>; // source ids seen in tool results
   toolCourseCodes: Set<string>; // course codes that appeared in tool results
@@ -238,7 +238,7 @@ const CALLBACK = T(
 
 const TEXT_LINK = T(
   "send_text_link",
-  "Text the caller a link to the Neeley advising website so they can sign in and see their own plan. Only after they say yes. Uses the number they are calling from unless they give another.",
+  "Text the person a link to the Neeley advising website so they can sign in and see their own plan. Only after they give a phone number and say yes.",
   { phone: { type: "string" }, consent: { type: "boolean" } },
   ["consent"],
 );

@@ -40,7 +40,7 @@ A web app for TCU Neeley School of Business built for the *Graduation Blueprint*
 | Recommendations | `/api/recommend` | Explains next-term courses and optional electives from the engine's plan | Add a course that is not in the catalog or plan |
 | Chat | `/api/chat` | Student mode (tools: plan, requirements, what-ifs, courses, market, advisor packet) and prospect mode (one question at a time with clickable chips, fit scoring) | Compute eligibility, approve anything |
 | Job market | `/api/market/analysis` | Writes a 3-5 year outlook from BLS data only | Add numbers that are not in the data |
-| Voice | `/api/voice/*` | Same brain, spoken style, prospect-level only | See anyone's record |
+| Voice | `/api/vapi/tools` | Same brain, spoken style, general information only. Vapi runs the call; this endpoint answers its `neeley_advising_answer` function | See anyone's record |
 
 Every reply is verified against what the tools returned. Problems trigger one rewrite, then a visible caution.
 
@@ -63,25 +63,34 @@ Without `ANTHROPIC_API_KEY` the app still reads transcripts (rule-based), plans,
 |---|---|
 | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `ANTHROPIC_FAST_MODEL` | Claude features (defaults: `claude-sonnet-5-5`, `claude-haiku-5-5`) |
 | `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Persisting advisor requests, feedback, survey, voice conversations (otherwise in memory) |
-| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, `ADVISOR_PHONE_NUMBER`, `APP_BASE_URL` | Voice and SMS |
+| `NEXT_PUBLIC_VAPI_PUBLIC_KEY`, `NEXT_PUBLIC_VAPI_ASSISTANT_ID` | Browser voice calls (the home-page call control) |
+| `VAPI_SERVER_SECRET` | Server-only secret that authenticates Vapi's requests to `/api/vapi/tools` |
+| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, `APP_BASE_URL` | Optional SMS only (text-me-the-link). Twilio is not used for voice |
 | `ADVISOR_PASSCODE` | Required to open `/advisor` in production |
-| `NEXT_PUBLIC_AI_PHONE_DISPLAY`, `NEXT_PUBLIC_ADVISOR_SCHEDULING_URL` | Display values |
+| `NEXT_PUBLIC_ADVISOR_SCHEDULING_URL` | Display value |
 
 Never commit real values. `.env.example` holds names only.
 
 ### Supabase
 The schema is `supabase/migrations/0001_init.sql` (already applied to the *Neeley Ai - Hackton* project). Row-level security is on with **no public policies**: only the server's service role key can read or write.
 
-### Twilio voice
-1. Buy a number. Set its **Voice webhook (POST)** to `https://<your-app>/api/voice/incoming`.
-2. Set `TWILIO_AUTH_TOKEN`, `APP_BASE_URL` (the public URL, used to validate signatures), optionally `ADVISOR_PHONE_NUMBER` for "talk to a person" transfers and `TWILIO_ACCOUNT_SID`/`TWILIO_PHONE_NUMBER` for texting a link.
-3. Every webhook is signature-validated; forged requests get 403. The caller is not verified, so voice is general information only.
-4. Conversation state is stored by `CallSid` in Supabase when configured. Without Supabase it is kept in server memory, which is not reliable on serverless.
-5. This uses Twilio's speech `<Gather>` loop, which works on Vercel. A lower-latency upgrade is Twilio ConversationRelay, which needs a small always-on websocket server.
-6. A Twilio trial account only calls verified numbers.
+### Voice (Vapi, in the browser)
+The home page has a **Talk to the assistant** button that starts a browser call through the [Vapi](https://vapi.ai) web SDK. Vapi runs the speech and the call; every Neeley question is sent to this app's own voice-mode AI and advising tools, so there is no second knowledge base. The caller is not verified, so voice gives **general information only** and never sees a record.
+
+1. In the Vapi dashboard create an **Assistant**. Give it a short system prompt: greet the caller, say it is an AI, and call `neeley_advising_answer` for every question about Neeley, majors, courses or careers; read the result aloud and never add facts.
+2. Add a **Custom Function tool** with these settings:
+   - Name: `neeley_advising_answer`
+   - Description: "Answer a question about TCU Neeley School of Business majors, courses, plans and careers using the advising app. Pass the caller's question in their own words."
+   - Parameters: `{ "type": "object", "properties": { "question": { "type": "string", "description": "The caller's question." } }, "required": ["question"] }`
+   - Server URL: `https://<your-app>/api/vapi/tools`
+   - Credential: create a **Custom Credential** with header name `x-vapi-secret` and a long random value. Put the same value in `VAPI_SERVER_SECRET`.
+3. Copy the **public key** and the **assistant ID** into `NEXT_PUBLIC_VAPI_PUBLIC_KEY` and `NEXT_PUBLIC_VAPI_ASSISTANT_ID`. In the Vapi dashboard, restrict the public key to your site's origin (for example `https://<your-app>.vercel.app`) so other sites cannot use it.
+4. Redeploy so the `NEXT_PUBLIC_` values reach the browser, then check `/api/health`: `vapi.ready` should be `true`.
+
+The endpoint rejects a missing or wrong secret (401), oversized bodies (413) and malformed requests (400). It only accepts the `question` argument, answers in plain spoken text, and keeps each call's conversation by Vapi call ID (Supabase when configured, memory otherwise). Callers can ask for an advisor call-back or a texted sign-in link; both need a name or number and a clear yes, and the text uses the optional Twilio SMS settings. Browsers require HTTPS and microphone permission.
 
 ### Deploy (Vercel)
-Import the repo, framework preset *Next.js*, add the environment variables above. The `data/` folder is traced into the serverless functions.
+Import the repo, framework preset *Next.js* (also set in `vercel.json`, which installs with `npm ci`), add the environment variables above. The `data/` folder is traced into the serverless functions.
 
 ## Data pipeline (`scripts/`)
 - `build_catalog.py`: parses the 2,791-page catalog PDF into `data/catalog/courses.json` (about 3,900 courses with descriptions, prerequisites and typical offerings). Catalog pages list each page's course headers first and the descriptions after, so pairing is done **per page** to avoid drift; four mismatched pages (graduate courses) are logged.

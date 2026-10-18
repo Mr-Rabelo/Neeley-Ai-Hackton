@@ -1,12 +1,21 @@
 import { json } from "@/lib/api";
 import { anthropic, describeAiError, FAST_MODEL, hasAnthropicKey, MODEL } from "@/lib/ai/client";
 import { storageMode } from "@/lib/store";
-import { twilioConfigured } from "@/lib/twilio";
+import { smsConfigured } from "@/lib/twilio";
+import { vapiConfig } from "@/lib/vapi";
 
 export const maxDuration = 30;
 
 export async function GET(req: Request) {
-  const base = { ok: true, ai: hasAnthropicKey() ? "configured" : "missing ANTHROPIC_API_KEY", storage: storageMode(), voice: twilioConfigured() ? "configured" : "not configured" };
+  const v = vapiConfig();
+  const base = {
+    ok: true,
+    ai: hasAnthropicKey() ? "configured" : "missing ANTHROPIC_API_KEY",
+    storage: storageMode(),
+    // Voice runs on Vapi. All three values are needed for browser calls and the tools endpoint.
+    vapi: { ...v, ready: v.publicKey && v.assistantId && v.serverSecret },
+    sms: smsConfigured() ? "configured" : "not configured",
+  };
   if (new URL(req.url).searchParams.get("deep") !== "1" || !hasAnthropicKey()) return json(base);
   // Deep check: one tiny call per configured model, reporting only non-secret status text.
   const checks: Record<string, string> = {};

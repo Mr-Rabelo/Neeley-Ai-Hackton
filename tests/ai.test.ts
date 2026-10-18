@@ -121,13 +121,13 @@ describe("chat loop", () => {
     const out = await runChat({ llm, mode: "prospect", messages: [{ role: "user", content: "I know nothing" }] });
     expect(out.options[0].options.length).toBe(2);
   });
-  it("voice mode cannot see student records or plans", async () => {
+  it("voice mode (browser) cannot see student records or plans", async () => {
     const { llm, calls } = script(() => text("Happy to help."));
     await runChat({ llm, mode: "voice", messages: [{ role: "user", content: "what is my plan" }], record: rec });
     const names = calls[0].tools!.map((t) => t.name);
     expect(names).not.toContain("get_plan");
     expect(names).not.toContain("create_advisor_packet");
-    expect(calls[0].system).toMatch(/PHONE CALL/);
+    expect(calls[0].system).toMatch(/VOICE CONVERSATION IN THE BROWSER/);
   });
 });
 
