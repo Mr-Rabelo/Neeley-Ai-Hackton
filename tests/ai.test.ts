@@ -144,6 +144,16 @@ describe("transcript extraction and profiling", () => {
     expect(r2.discrepancies.join(" ")).toMatch(/ECON10233: grade differs/);
     expect(r2.record.courses.find((c) => c.code === "ECON10233")!.grade).toBe("B+");
   });
+  it("falls back to the parser and the rules profile when Claude fails, and says why", async () => {
+    const boom: Llm = async () => { throw Object.assign(new Error("401 invalid x-api-key"), { status: 401 }); };
+    const r = await extractTranscript(raw, boom, { isSample: true });
+    expect(r.method).toBe("deterministic");
+    expect(r.record.courses.length).toBe(18);
+    expect(r.notes.join(" ")).toMatch(/AI extraction failed \(HTTP 401/);
+    const p = await profileStudent(rec, boom);
+    expect(p.generatedBy).toBe("rules");
+    expect(p.limits).toMatch(/Claude was unavailable/);
+  });
   it("drops profile claims that cite courses not on the transcript", async () => {
     const { llm } = script(() => [
       toolUse("p", "submit_profile", {

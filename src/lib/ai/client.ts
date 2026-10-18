@@ -20,3 +20,11 @@ export class AiUnavailableError extends Error {
     this.name = "AiUnavailableError";
   }
 }
+
+/** A short, non-secret description of an Anthropic API failure for logs, notes and the health check. */
+export function describeAiError(e: unknown): string {
+  const x = e as { status?: number; error?: { error?: { type?: string; message?: string }; type?: string; message?: string }; message?: string; name?: string };
+  const type = x?.error?.error?.type ?? x?.error?.type;
+  const msg = x?.error?.error?.message ?? x?.error?.message ?? x?.message ?? String(e);
+  return `${x?.status ? `HTTP ${x.status} ` : ""}${type ? `${type}: ` : ""}${String(msg).replace(/sk-[A-Za-z0-9_-]+/g, "[key]").slice(0, 220)}`;
+}

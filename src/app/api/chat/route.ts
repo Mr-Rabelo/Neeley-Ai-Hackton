@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AI_OFF, json, llmOrNull, parseRecord, readJson } from "@/lib/api";
 import { runChat } from "@/lib/ai/chat";
+import { describeAiError } from "@/lib/ai/client";
 
 export const maxDuration = 120;
 
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
         for (const o of out.options) send("options", o);
         send("done", { verified: out.verified, issues: out.issues, tools: out.toolsUsed, packetId: out.packetId });
       } catch (e) {
-        send("error", e instanceof Error ? e.message : "Something went wrong.");
+        send("error", `The assistant hit a problem (${describeAiError(e)}). Please try again.`);
       } finally {
         controller.close();
       }

@@ -1,7 +1,7 @@
 import type { Tool, ToolUseBlock } from "@anthropic-ai/sdk/resources/messages";
 import type { PlanResult, StudentRecord, TranscriptCourse } from "../types";
 import type { Llm } from "./llm";
-import { FAST_MODEL } from "./client";
+import { FAST_MODEL, describeAiError } from "./client";
 import { gpaBySubject, parseTranscriptText } from "../transcript";
 import { termIdFromTranscript } from "../terms";
 import { getCourse, prettyCode } from "../catalog";
@@ -57,14 +57,20 @@ export async function extractTranscript(text: string, llm: Llm | null, opts: { i
     notes.push("AI extraction was not run (no API key); the rule-based parser was used.");
     return { record: det, method: "deterministic", agreed: true, discrepancies: [], notes };
   }
-  const res = await llm({
+  let res: Awaited<ReturnType<Llm>>;
+  try {
+    res = await llm({
     model: FAST_MODEL(),
     maxTokens: 6000,
     system:
       "You read university transcripts. Extract the courses and plans exactly as printed. Include transfer credit lines (grade T) with transfer=true. Course attribute lines belong to the course above them. A course with attempted hours but zero earned and no grade is in progress (grade ''). Never invent a course. Call submit_transcript once.",
     messages: [{ role: "user", content: `Transcript text:\n\n${text.slice(0, 30000)}` }],
     tools: [SUBMIT_TRANSCRIPT],
-  });
+    });
+  } catch (e) {
+    notes.push(`AI extraction failed (${describeAiError(e)}); the rule-based parser was used instead.`);
+    return { record: det, method: "deterministic", agreed: true, discrepancies: [], notes };
+  }
   const use = res.content.find((b): b is ToolUseBlock => b.type === "tool_use");
   if (!use) {
     notes.push("The AI did not return a structured transcript; the rule-based parser was used.");
@@ -200,13 +206,19 @@ function validate(raw: Omit<StudentProfile, "generatedBy" | "removedUnsupported"
 
 export async function profileStudent(record: StudentRecord, llm: Llm | null, plan?: PlanResult): Promise<StudentProfile> {
   if (!llm) return rulesProfile(record, plan);
-  const res = await llm({
+  let res: Awaited<ReturnType<Llm>>;
+  try {
+    res = await llm({
     maxTokens: 3000,
     system:
       "You build an academic profile of a student from their transcript, for an advising tool. Use ONLY the transcript data given. Every claim must cite the course codes it rests on. Label inferences as inferences (confidence high only when several courses and grades agree). Strengths come from grades (A and B+ work, subject GPAs). Interests come from electives chosen beyond requirements, honors topics and course attributes. Risks come from in-progress prerequisites, low grades, heavy chains, P/NC use, unevaluated transfer credit. Gaps are things a student at this stage commonly still lacks for their stated plans. Career possibilities are fields to EXPLORE, never predictions or guarantees. Do not infer or mention race, religion, health, immigration, family or income. Do not mention the student's name. Keep each claim to one sentence. Then call submit_profile once.",
     messages: [{ role: "user", content: `Transcript features (JSON):\n${JSON.stringify(features(record, plan))}` }],
     tools: [SUBMIT_PROFILE],
-  });
+    });
+  } catch (e) {
+    const p = rulesProfile(record, plan);
+    return { ...p, limits: `${p.limits} Claude was unavailable (${describeAiError(e)}).` };
+  }
   const use = res.content.find((b): b is ToolUseBlock => b.type === "tool_use");
   if (!use) return rulesProfile(record, plan);
   const v = validate(use.input as never, record);
